@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.explorer.routemap.board.mapper.LinkSQLMapper">
+
+	<!-- 루트공유 글읽기에서 해당 루트글의 연결된 장소 게시물 가져오기 --> 
+	<select id="selectLinkAndLocationByRouteboardNo" resultType="com.explorer.routemap.board.vo.LinkVo">
+	<![CDATA[
+	SELECT * 
+	FROM RM_Location_Route_Link 
+	WHERE routeboard_no=#{routeboard_no}
+	]]>
+	</select>
+	
+	<!-- 게시물 삭제 시 루트 링크 같이 삭제 -->
+	<delete id="deleteRouteboard">
+	<![CDATA[
+		DELETE FROM RM_Location_Route_Link
+		WHERE routeboard_no=#{routeboard_no}
+	]]>
+	</delete>
+	<!-- 게시물 삭제 시 장소 링크 같이 삭제 -->
+		<delete id="deleteLocationboard">
+	<![CDATA[
+		DELETE FROM RM_Location_Route_Link
+		WHERE locationboard_no=#{locationboard_no}
+	]]>
+	</delete>
+	 <!-- 링크 번호 생성 -->
+   <select id="createLinkKey" resultType="int">
+      <![CDATA[
+         SELECT RM_Location_Route_Link_Seq.nextval
+         FROM DUAL
+      ]]>
+   </select>
+   
+   <!-- 링크 연결 - 장소와 루트를 링크 -->
+   <insert id="insert">
+      <![CDATA[
+         INSERT INTO RM_Location_Route_Link
+         VALUES(
+         #{linkVo.link_no},
+         #{locationboardVo.locationboard_no},
+         #{routeboardVo.routeboard_no},
+         #{linkVo.link_cost},
+         #{linkVo.link_time},
+         #{linkVo.link_order}
+         )
+      ]]>
+   </insert>
+   <!-- 루트 글 업데이트를 위한 링크 리셋 -->
+	<delete id="deleteLinkForUpdate">
+	<![CDATA[
+		DELETE FROM RM_Location_Route_Link
+		WHERE routeboard_no=#{routeboard_no}
+	]]>
+	</delete>
+</mapper>

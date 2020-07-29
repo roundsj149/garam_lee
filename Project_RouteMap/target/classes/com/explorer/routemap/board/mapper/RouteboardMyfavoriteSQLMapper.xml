@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.explorer.routemap.board.mapper.RouteboardMyfavoriteSQLMapper">
+	<select id="selectMyfavoriteAllCheck" resultType="com.explorer.routemap.board.vo.RouteboardMyfavoriteVo">
+		<![CDATA[
+			SELECT * FROM RM_RT_Myfavorite
+			WHERE member_no = #{member_no}
+			AND routeboard_no = #{routeboard_no}
+		]]>
+	</select>
+	<insert id="insertMyfavoriteCheck">
+		<![CDATA[
+			INSERT INTO RM_RT_Myfavorite VALUES (
+			RM_RT_Myfavorite_seq.nextval, 
+			#{member_no}, 
+			#{routeboard_no})
+		]]>
+	</insert>
+
+	<delete id="deleteMyfavoriteCheck">
+		<![CDATA[
+			DELETE FROM RM_RT_Myfavorite
+			WHERE 
+			member_no = #{member_no} AND 
+			routeboard_no = #{routeboard_no}
+		]]>
+	</delete>
+	<!-- 루트 관심 삭제 -->
+	<delete id="deleteMyfavorite">
+		<![CDATA[
+			DELETE FROM RM_RT_Myfavorite
+			WHERE
+			routeboard_no = #{routeboard_no}
+		]]>
+	</delete>
+</mapper>

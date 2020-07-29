@@ -1,0 +1,19 @@
+.keepLogin {
+	cursor:pointer;
+	-ms-user-select: none;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+	
+}
+
+.advice {
+	text-align:left;
+	line-height: 19px;
+	font-size: 14px;
+    line-height: 16px;
+    margin: 12px 0 12px;
+    color: #ff1616;
+	letter-spacing: -1px;
+}

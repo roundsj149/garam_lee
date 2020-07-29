@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.explorer.routemap.myfar.mapper.MyRouteSQLMapper">
+	<!-- 나의 루트 -->
+	<select id="selectByMemberNo" resultType="com.explorer.routemap.board.vo.RouteboardVo">
+	<![CDATA[
+	SELECT * 
+	FROM
+        (SELECT rownum rnum, t1.*
+         FROM
+              (SELECT * 
+               FROM RM_Routeboard
+               WHERE member_no=#{member_no}
+               ORDER BY routeboard_no DESC) t1) t2
+	WHERE t2.rnum >= (#{currPage}-1)*12+1 AND t2.rnum <= (#{currPage}-1)*12+12
+	]]>
+	</select>
+	
+	<!--  나의 루트 새로 만들기(빈 껍데기) -->
+	<insert id="insertMyRoute">
+	<![CDATA[
+		INSERT INTO RM_Routeboard 
+		VALUES(
+				RM_Routeboard_seq.nextval,
+				#{member_no},
+				#{routeboard_title},
+				null,
+				0,
+				'N',
+				SYSDATE)
+	]]>
+	</insert>
+</mapper>

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.explorer.routemap.note.mapper.NoteSQLMapper">
+   <!-- 쪽지 보내기 기능 -->
+   <insert id="insertBySendNote">
+   <![CDATA[
+   INSERT INTO RM_NOTE 
+   VALUES(
+   RM_NOTE_SEQ.NEXTVAL, 
+   #{memberVo.member_no}, 
+   #{memberVo.member_id}, 
+   #{recv_member_no}, 
+   #{noteVo.recv_member_id}, 
+   #{noteVo.note_title}, 
+   #{noteVo.note_content}, 
+   SYSDATE, 
+   NULL, 
+   'N',
+   'N'
+   )
+   ]]>
+   </insert>
+   
+   <!-- 받은 쪽지함 리스트 출력 -->
+   <select id="selectByRecvNote" resultType="com.explorer.routemap.note.vo.NoteVo">
+   <![CDATA[
+   SELECT *
+   FROM(
+       SELECT ROWNUM RNUM, T1.* 
+       FROM(
+           SELECT * 
+           FROM RM_NOTE 
+           WHERE RECV_MEMBER_NO = #{recvMemberNo}
+           AND NOTE_RECV_DELETE = 'N'
+           ORDER BY NOTE_NO DESC
+           )T1
+   )T2    
+   WHERE T2.RNUM >=(#{currPage}-1) * 10+1 AND T2.RNUM <= #{currPage}*10
+   ORDER BY NOTE_NO DESC
+   ]]>
+   </select>
+      
+   <!-- 보낸 쪽지함 리스트 출력 -->
+   <select id="selectBySendNote" resultType="com.explorer.routemap.note.vo.NoteVo">
+   <![CDATA[
+   SELECT * 
+   FROM(
+       SELECT ROWNUM RNUM, T1.* 
+       FROM(   
+           SELECT * 
+           FROM RM_NOTE 
+           WHERE SEND_MEMBER_NO = #{sendMemberNo}
+           AND NOTE_SEND_DELETE = 'N'
+           ORDER BY NOTE_NO DESC
+           )T1
+   )T2
+   WHERE T2.RNUM >=(#{currPage}-1) * 10+1 AND T2.RNUM <= #{currPage}*10
+   ]]>
+   </select>
+   
+   <!-- 받은 쪽지함 쪽지 읽기 -->
+   <select id="selectByRecvReadNote" resultType="com.explorer.routemap.note.vo.NoteVo">
+   <![CDATA[
+   SELECT * 
+   FROM RM_NOTE 
+   WHERE NOTE_NO = #{noteNo}
+   ]]>
+   </select>
+   
+   <!-- 받은 쪽지함 글 전체 갯수 -->
+   <select id="selectByRecvCount" resultType="int">
+   <![CDATA[
+   SELECT COUNT(*) 
+   FROM RM_NOTE 
+   WHERE RECV_MEMBER_NO= #{recvMemberNo} 
+   AND NOTE_RECV_DELETE = 'N'
+   ]]>
+   </select>
+   
+   <!-- 받은 쪽지함 읽으면 받은 날짜 업데이트  -->
+   <update id="updateByRecvReadDate">
+   <![CDATA[
+   UPDATE RM_NOTE 
+   SET NOTE_READ_DATE = SYSDATE 
+   WHERE NOTE_NO = #{noteNo}  
+   AND NOTE_READ_DATE IS NULL
+   ]]>
+   </update>   
+   
+   <!-- 받은 쪽지함 글 삭제 Y표시로 업데이트 -->
+   <update id="updateByRecvNoteList">
+   UPDATE RM_NOTE 
+   SET NOTE_RECV_DELETE = 'Y' 
+   <choose>
+      <when test="note_no.length != 0">
+      WHERE NOTE_NO IN 
+         <foreach collection="note_no" item="noteNo" index="index" separator="," open="(" close=")">
+            #{noteNo}      
+         </foreach>      
+      </when>
+   </choose>
+   
+   </update>
+   
+   <!-- 보낸 쪽지함 쪽지 읽기 -->
+   <select id="selectBySendReadNote" resultType="com.explorer.routemap.note.vo.NoteVo">
+   <![CDATA[
+   SELECT * 
+   FROM RM_NOTE 
+   WHERE NOTE_NO = #{noteNo}
+   ]]>
+   </select>
+      
+   <!-- 보낸 쪽지함 글 전체 개수 -->
+   <select id="selectBySendCount" resultType="int">
+   <![CDATA[
+   SELECT COUNT(*) 
+   FROM RM_NOTE 
+   WHERE SEND_MEMBER_NO= #{sendMemberNo}
+   AND NOTE_SEND_DELETE = 'N'
+   ]]>
+   </select>
+   
+   <!-- 보낸 쪽지함에서 받은 사람이 읽지 않았을 경우 발송 취소 -->
+   <delete id="deleteBySendNote">
+   <![CDATA[
+   DELETE 
+   FROM RM_NOTE
+   WHERE NOTE_NO = #{noteNo}
+   AND NOTE_READ_DATE IS NULL
+   ]]>
+   </delete>   
+   
+   <!-- 보낸 쪽지함 글 삭제 Y표시로 업데이트 -->
+   <update id="updateBySendNoteList">
+   UPDATE RM_NOTE 
+   SET NOTE_SEND_DELETE = 'Y' 
+   <choose>
+         <when test="note_no.length != 0">
+            WHERE NOTE_NO IN
+            <foreach collection="note_no" item="noteNo"   index="index" separator="," open="(" close=")">
+               #{noteNo}
+            </foreach>
+         </when>
+      </choose>
+   </update>
+   
+   <!-- 받은 쪽지함, 보낸 쪽지함 글 삭제 모두 Y표시일때 데이터상의 글 삭제 -->
+   <delete id="deleteByNoteList">
+   DELETE 
+   FROM RM_NOTE 
+   WHERE NOTE_SEND_DELETE = 'Y' AND NOTE_RECV_DELETE = 'Y'
+   </delete>
+</mapper>

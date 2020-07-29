@@ -1,0 +1,23 @@
+@charset "UTF-8";
+/* header 관련*/
+header {
+	height: 65px;
+}
+
+.logo-img-size {
+	height: 50px;
+}
+
+/*nav 관련*/
+nav {
+	height: 50px;
+}
+
+.navbar-light .navbar-nav .nav-link {
+	border-bottom: 4px solid transparent;
+}
+
+.navbar-nav .nav-link.active, .navbar-nav .nav-link:hover {
+	border-bottom: 4px solid #58AF9E;
+	padding-bottom: 8px;
+}

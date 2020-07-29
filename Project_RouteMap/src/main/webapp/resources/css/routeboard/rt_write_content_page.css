@@ -1,0 +1,28 @@
+@charset "UTF-8";
+
+body{
+   /* Canyon Clay = R.G.B(206,133,121) */
+   /* Old Rose = R.G.B(179,123,119) */
+   /* Serenity = R.G.B(145,167,206) */
+   /* Classic Blue = R.G.B(58,84,131) */
+   /* background-color : rgb(58,84,131); */
+}
+
+#container{
+   /* Canyon Clay = R.G.B(206,133,121) */
+   /* Old Rose = R.G.B(179,123,119) */
+   /* Serenity = R.G.B(145,167,206) */
+   /* Classic Blue = R.G.B(58,84,131) */
+   /* background-color : rgb(58,84,131); */
+}
+
+.display-none{   
+   display : none;
+}
+
+.nameTag {
+	font-weight:bold;
+	align-self:center;
+	margin:0 2px;
+	padding-right:0px;
+}

@@ -1,0 +1,83 @@
+.header {
+	padding-top:50px;
+	padding-bottom:30px;
+}
+
+#idInfo {
+	color:#58AF9E;
+}
+
+tr {
+	display: table-row;
+	vertical-align: inherit;
+	border-color: #E5E5E5;
+	padding: 20px;
+}
+
+th {
+	padding: 20px;
+	border-top: 1px solid #E5E5E5;
+	vertical-align: top;
+	width:150px;
+}
+
+td {
+	padding: 20px;
+	border-top: 1px solid #E5E5E5;
+	border-left: 1px solid #E5E5E5;
+	vertical-align: top;
+	width:600px;
+}
+
+#withdrawal {
+	font-size: 10px;
+	float:right;
+}
+
+.advice {
+	font-size: 12px;
+	margin-top: 10px;
+	color: #8E8E8E;
+}
+
+.content {
+    font-size: 14px;
+    line-height: 16px;
+    color: #333;
+}
+
+.label {
+	font-size: 12px;
+	font-weight:bold;
+    line-height: 16px;
+    color: #333;
+    margin-top:20px;
+}
+
+#updateNick {
+	font-size:12px;
+}
+
+.info-container {
+	display:flex;
+	min-height:700px;
+	flex-direction:column;
+	padding-left:200px;
+	padding-right:200px;
+	padding-bottom:50px;
+}
+
+#birthdayUpdate{
+	display: none;
+	flex-direction:column;
+}
+
+#birthday{
+	display:flex;
+	align-items:center;
+}
+
+#mypage-nav {
+	border-bottom: 4px solid #58AF9E;
+    padding-bottom: 8px;
+}

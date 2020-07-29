@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.explorer.routemap.board.mapper.FreeboardSQLMapper">
+
+	<!-- 게시물 번호 생성 -->
+	<select id="createFreeboardKey" resultType="int">
+		<![CDATA[
+		SELECT RM_Freeboard_seq.nextval
+		FROM DUAL
+		]]>
+	</select>
+
+	<!-- 자유게시판 글쓰기 -->
+	<insert id="insert">
+		<![CDATA[
+		INSERT INTO RM_Freeboard
+		VALUES(#{freeboard_no},
+		#{member_no},
+		#{freeboard_title},
+		#{freeboard_content},
+		0,
+		SYSDATE)
+		]]>
+	</insert>
+
+	<!-- 게시물 읽기 -->
+	<select id="selectByFreeboardNo"
+		resultType="com.explorer.routemap.board.vo.FreeboardVo">
+		<![CDATA[
+		SELECT *
+		FROM RM_Freeboard
+		WHERE freeboard_no = #{freeboard_no}
+		]]>
+	</select>
+
+	<!-- 게시글 조회수 -->
+	<update id="freeboardReadcount">
+		<![CDATA[
+		UPDATE RM_Freeboard
+		SET freeboard_readcount = freeboard_readcount + 1
+		WHERE freeboard_no = #{freeboard_no} 
+		]]>
+	</update>
+
+	<!-- 추천글 선택 -->
+	<select id="selectRecommendFreeboardByNo" resultType="int">
+			<![CDATA[
+		SELECT NVL(MAX(freeboard_no), 0) freeboard_no
+		FROM( SELECT freeboard_no
+		FROM RM_FB_Recommend
+		GROUP BY freeboard_no
+		HAVING COUNT(freeboard_no) = (SELECT MAX(COUNT(freeboard_no)) maxcount
+		                             FROM RM_FB_Recommend
+		                             GROUP BY freeboard_no)) t2
+		           
+		
+		]]>
+
+	</select>
+
+	<!-- 전체글 목록 및 페이징 처리 -->
+	
+	<select id="selectAllBoardList"
+		resultType="com.explorer.routemap.board.vo.FreeboardVo">
+		<![CDATA[
+		SELECT * 
+				FROM(
+				    SELECT ROWNUM rnum, T1.* 
+				    FROM(
+				        SELECT * 
+				        FROM RM_FREEBOARD
+				        ORDER BY FREEBOARD_NO DESC) T1
+				    )T2
+				WHERE T2.rnum >= (#{currPage}-1)*10+1 AND T2.rnum <= #{currPage}*10
+		]]>
+
+	</select>
+
+	<!-- 게시물 제목 검색 -->
+	
+	<select id="selectByTitle" resultType="com.explorer.routemap.board.vo.FreeboardVo">
+		<![CDATA[
+		SELECT * FROM 
+		(SELECT ROWNUM rnum, t1.* FROM
+		(SELECT t2.* FROM RM_Freeboard t2 
+		WHERE freeboard_title LIKE '%'||#{word}||'%'
+		ORDER BY t2.freeboard_no DESC) t1 )t3
+		WHERE t3.rnum >= (#{currPage}-1)*10+1 AND t3.rnum <=(#{currPage})*10
+		]]>
+
+	</select>
+
+	<!-- 게시물 제목+내용 검색 -->
+	<select id="selectByTitleAndContent" resultType="com.explorer.routemap.board.vo.FreeboardVo">
+		<![CDATA[
+		SELECT * FROM RM_Freeboard
+		WHERE freeboard_title LIKE '%' || #{word} || '%' 
+		OR freeboard_content LIKE '%' || #{freeboard_content} || '%'
+		]]>
+
+	</select>
+
+	<!-- 게시물 글쓴이 검색 -->
+	<select id="selectByContent" resultType="com.explorer.routemap.board.vo.FreeboardVo">
+		<![CDATA[
+		SELECT * FROM RM_Freeboard
+		WHERE freeboard_title LIKE '%' || #{member_no} || '%'
+		]]>
+
+	</select>
+
+	<select id="selectAllCount" resultType="int">
+	<![CDATA[
+	SELECT COUNT(*) FROM RM_Freeboard
+	]]>
+	</select>
+
+	<select id="selectByTitleCount" resultType="int">
+	<![CDATA[
+	SELECT COUNT(*) FROM RM_Freeboard
+	WHERE freeboard_title LIKE '%'||#{word}||'%'
+	
+	
+	]]>
+
+	</select>
+
+<update id="update">
+<![CDATA[
+UPDATE RM_Freeboard SET
+freeboard_title = #{freeboard_title},
+freeboard_content = #{freeboard_content}
+WHERE freeboard_no = #{freeboard_no}
+
+]]>
+</update>
+
+<delete id="deleteContent">
+<![CDATA[
+DELETE FROM RM_Freeboard WHERE freeboard_no = #{freeboard_no}
+]]>
+</delete>
+
+
+
+</mapper>

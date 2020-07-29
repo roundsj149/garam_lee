@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.explorer.routemap.board.mapper.RouteboardSQLMapper">
+
+	<!-- 게시물 제목 검색 -->
+	<select id="selectByTitle"
+		resultType="com.explorer.routemap.board.vo.RouteboardVo">
+		<![CDATA[
+			SELECT *
+			FROM (
+				    SELECT ROWNUM rn, t2.* 
+				    FROM (
+				            SELECT t1.* 
+				            FROM RM_Routeboard t1
+				            WHERE routeboard_title LIKE '%'||#{search_word}||'%'
+				            ORDER BY t1.routeboard_no DESC) t2) t3
+			WHERE t3.rn >= (#{currPage}-1)*12+1
+			AND t3.rn <= (#{currPage}-1)*12+12
+		]]>
+	</select>
+	<!-- 게시물 1건 읽기 -->
+	<select id="selectRouteByRouteboardNo"
+		resultType="com.explorer.routemap.board.vo.RouteboardVo">
+		<![CDATA[
+			SELECT *
+			FROM RM_Routeboard
+			WHERE routeboard_no=#{routeboard_no}
+		]]>
+	</select>
+	<!-- 게시물 조회수 -->
+	<update id="updateReadcount">
+		<![CDATA[
+			UPDATE RM_Routeboard
+			SET routeboard_readcount = routeboard_readcount+1
+			WHERE routeboard_no=#{routeboard_no}
+		]]>
+	</update>
+	<!-- 게시물 삭제 -->
+	<delete id="delete">
+      <![CDATA[
+         DELETE FROM RM_Routeboard
+         WHERE routeboard_no=#{routeboard_no}
+      ]]>
+	</delete>
+	<!-- 좋아요 수 가장 많은 글 3건 선택 -->
+	<select id="selectMaxLikeRouteboardByNo" resultType="int">
+		<![CDATA[
+		SELECT routeboard_no
+		FROM (SELECT count(routeboard_no) cnt, routeboard_no
+	          FROM RM_RT_Like
+	          GROUP BY routeboard_no
+	          ORDER BY cnt DESC) t1
+		WHERE ROWNUM <= 3
+		]]>
+	</select>
+	<!-- 루트 게시글 번호 생성 -->
+	<select id="createRouteboardKey" resultType="int">
+      <![CDATA[
+         SELECT RM_Routeboard_seq.nextval
+         FROM DUAL
+      ]]>
+	</select>
+	<!-- 루트 글 쓰기 -->
+	<insert id="insert">
+      <![CDATA[
+         INSERT INTO RM_Routeboard
+         VALUES(
+         #{routeboard_no},
+         #{member_no},
+         #{time_category_no},
+         #{cost_category_no},
+         #{routeboard_title},
+         #{routeboard_content},
+         0,
+         #{routeboard_time},
+         #{routeboard_cost},
+         'Y',
+         SYSDATE)
+      ]]>
+	</insert>
+	<!-- 전ㅊ ㅔ게시물 ajax -->
+	<select id="selectAllWithCondition" parameterType="map"
+		resultType="com.explorer.routemap.board.vo.RouteboardVo">
+		${SELECT_ROUTEBOARD}
+	</select>
+	<!-- 전ㅊ ㅔ게시물 건수 ajax -->
+	<select id="countAllWithCondition" parameterType="map"
+		resultType="int">
+		${COUNT_ROUTEBOARD}
+	</select>
+	<!-- 좋아요 순 정렬을 위한 routeboard_no 추출 -->
+	<select id="likeAlign" resultType="int">
+		<![CDATA[
+		SELECT routeboard_no 
+		FROM
+			(SELECT count(routeboard_no) cnt, routeboard_no 
+			 FROM RM_RT_LIKE
+			 GROUP BY routeboard_no 
+			 ORDER BY cnt DESC)
+		]]>
+	</select>
+
+	<!-- 루트글쓰기 - 비용, 소요시간, 카테고리 업데이트 -->
+	<update id="updateCostAndTime">
+	<![CDATA[
+		UPDATE RM_Routeboard
+		SET time_category_no=#{time_category_no}, 
+			cost_category_no=#{cost_category_no}, 
+			routeboard_cost=#{routeboard_cost}, 
+			routeboard_time=#{routeboard_time}
+		WHERE routeboard_no=#{routeboard_no}
+		]]>
+	</update>
+	<!-- 게시글 번호로 글쓴이 뽑아오기 -->
+	<select id="selectMemberNoByRouteboardNo" resultType="int">
+		<![CDATA[
+			SELECT NVL(max(member_no), 0)
+			FROM RM_Routeboard
+			WHERE routeboard_no=#{routeboard_no}
+		]]>
+	</select>
+	<!-- 게시글 댓글 번호로 댓글 작성자 뽑아오기 -->
+	<select id="selectMemberNoByRouteboardReplyNo" resultType="int">
+		<![CDATA[
+			SELECT NVL(max(member_no), 0)
+			FROM RM_RT_Reply
+			WHERE routeboard_reply_no=#{routeboard_reply_no}
+		]]>
+	</select>
+	<!-- 루트 글 수정 -->
+	<update id="update">
+      <![CDATA[
+		UPDATE RM_Routeboard
+		SET
+        routeboard_title = #{routeboard_title},
+        routeboard_content = #{routeboard_content}
+		WHERE routeboard_no = #{routeboard_no}         
+      ]]>
+	</update>
+</mapper> 
+
+
+
+
+
+

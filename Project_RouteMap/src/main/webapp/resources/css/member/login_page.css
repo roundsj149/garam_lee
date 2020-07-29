@@ -1,0 +1,77 @@
+.keepLogin {
+	cursor: pointer;
+	-ms-user-select: none;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.advice {
+	text-align: left;
+	line-height: 19px;
+	font-size: 14px;
+	line-height: 16px;
+	margin: 12px 0 12px;
+	color: #ff1616;
+	letter-spacing: -1px;
+}
+
+.login {
+	margin-top: 40px;
+	display: flex;
+	padding: 0px;
+	border-radius: 30px;
+	box-shadow: 3px 3px 20px 5px #eaeaea;
+}
+
+.login_box {
+	display: flex;
+	flex-direction: column;
+	padding: 50px;
+	border-top-left-radius: 30px;
+	border-bottom-left-radius: 30px;
+	background-color: #FFFFFF;
+}
+
+.captcha_reload {
+	z-index: 5;
+	position: absolute;
+	color: green;
+	top: 50px;
+	left: 300px;
+	cursor: pointer
+}
+
+.form-check {
+	font-size: 0.8em;
+	display:flex;
+	align-items:center;
+	padding-left:20px
+}
+
+.background {
+	display:flex;
+	flex-direction: column;
+	padding:50px;
+	border-top-right-radius: 30px;
+	border-bottom-right-radius: 30px;
+	opacity: 0.4;
+	background-image: url('/resources/img/login_background.jpg');
+}
+
+/*새로운 디자인의 체크박스 만들기*/
+.checkbox-container input[type="checkbox"]+label:before {
+	content: ' ';
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	line-height: 16px;
+	margin: -2px 8px 0 0;
+	text-align: center;
+	vertical-align: middle;
+	background: #fffff;
+	border: 1px solid #58AF9E;
+	border-radius: 3px;
+	
+}

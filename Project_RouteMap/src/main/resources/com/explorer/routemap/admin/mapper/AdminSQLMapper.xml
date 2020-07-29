@@ -1,0 +1,703 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.explorer.routemap.admin.mapper.AdminSQLMapper">
+	<!-- 관리자에서 좋아요순으로 6개 출력 -->
+	<select id="selectLCLikeCount" resultType="int">
+	<![CDATA[
+		SELECT COUNT
+		FROM (SELECT LOCATIONBOARD_NO,SUM(COUNT) AS COUNT 
+			FROM (SELECT LOCATIONBOARD_NO, TO_NUMBER(1) AS COUNT 
+				FROM RM_LC_LIKE)
+		GROUP BY LOCATIONBOARD_NO 
+		ORDER BY COUNT DESC, LOCATIONBOARD_NO DESC) 
+		WHERE ROWNUM < 7
+	]]>
+	</select>
+
+	<!-- 관리자에서 좋아요순으로 6개 장소번호 출력 -->
+	<select id="selectLCLikeNo" resultType="int">
+	<![CDATA[
+		SELECT LOCATIONBOARD_NO
+		FROM (SELECT LOCATIONBOARD_NO,SUM(COUNT) AS COUNT 
+			FROM (SELECT LOCATIONBOARD_NO, TO_NUMBER(1) AS COUNT 
+				FROM RM_LC_LIKE)
+		GROUP BY LOCATIONBOARD_NO 
+		ORDER BY COUNT DESC, LOCATIONBOARD_NO DESC) 
+		WHERE ROWNUM < 7
+	]]>
+	</select>
+
+	<!-- 여행지맛집 게시글 총건수 출력 -->
+	<select id="selectLocationCount" resultType="int">
+	<![CDATA[
+		SELECT count(*) FROM RM_Locationboard WHERE TO_CHAR(LOCATIONBOARD_WRITEDATE, 'YYYYMMDD') = #{time1}
+	]]>
+	</select>
+
+	<!-- 좋아요순으로 6개 루트번호 출력 -->
+	<select id="selectRTLikeNo" resultType="int">
+	<![CDATA[
+		SELECT ROUTEBOARD_NO
+	    FROM (SELECT ROUTEBOARD_NO, SUM(COUNT) AS COUNT
+            FROM (SELECT ROUTEBOARD_NO, TO_NUMBER(1) AS COUNT FROM RM_RT_LIKE)
+        GROUP BY ROUTEBOARD_NO
+        ORDER BY COUNT DESC, ROUTEBOARD_NO DESC)
+        WHERE ROWNUM < 7
+    ]]>
+	</select>
+
+	<!-- 좋아요순으로 6개 루트 좋아요수 -->
+	<select id="selectRTLikeCount" resultType="int">
+	<![CDATA[
+		SELECT COUNT
+	    FROM (SELECT ROUTEBOARD_NO, SUM(COUNT) AS COUNT
+            FROM (SELECT ROUTEBOARD_NO, TO_NUMBER(1) AS COUNT FROM RM_RT_LIKE)
+        GROUP BY ROUTEBOARD_NO
+        ORDER BY COUNT DESC, ROUTEBOARD_NO DESC)
+        WHERE ROWNUM < 7
+    ]]>
+	</select>
+
+	<!-- 도넛차트 지역 게시글 순위 5등까지 지역번호 -->
+	<select id="selectLcProvCatNo" resultType="int">
+		<![CDATA[
+			SELECT PROVINCE_CATEGORY_NO FROM
+				(SELECT PROVINCE_CATEGORY_NO, SUM(COUNT) AS COUNT FROM 
+					(SELECT PROVINCE_CATEGORY_NO, TO_NUMBER(1) AS COUNT FROM RM_locationboard WHERE TO_CHAR(LOCATIONBOARD_WRITEDATE, 'YYYYMMDD') = #{time1}) 
+				GROUP BY province_category_no) 
+			WHERE ROWNUM < 6
+		]]>
+	</select>
+
+	<!-- 도넛차트 지역 게시글 순위 5등까지 게시글수 -->
+	<select id="selectLcboardCount" resultType="int">
+		<![CDATA[
+			SELECT COUNT FROM
+				(SELECT PROVINCE_CATEGORY_NO, SUM(COUNT) AS COUNT FROM 
+					(SELECT PROVINCE_CATEGORY_NO, TO_NUMBER(1) AS COUNT FROM RM_locationboard WHERE TO_CHAR(LOCATIONBOARD_WRITEDATE, 'YYYYMMDD') = #{time1}) 
+				GROUP BY province_category_no) 
+			WHERE ROWNUM < 6
+		]]>
+	</select>
+
+	<!-- 로그인 시 카운트 인서트 -->
+	<insert id="insertLoginData">
+      <![CDATA[
+         INSERT INTO RM_Login_Data VALUES (RM_Login_Data_seq.nextval, #{member_no}, SYSDATE, 1)
+      ]]>
+	</insert>
+
+	<!-- 로그인 횟수 날짜범위 -->
+	<select id="selectLoginWeekCount" resultType="int">
+      <![CDATA[
+         SELECT NVL(SUM(login_hit),'0') FROM RM_Login_Data WHERE login_date between TO_DATE(#{startDay},'YYYYMMDD') and TO_DATE(#{endDay},'YYYYMMDD') + 0.99999
+      ]]>
+	</select>
+
+	<!-- 해당 날짜 로그인 카운트 조회 -->
+	<select id="selectLoginCountbyDate" resultType="int">
+      <![CDATA[
+         SELECT NVL(SUM(login_hit),'0') FROM RM_Login_Data WHERE login_date between TO_DATE(#{date},'YYYYMMDD') and TO_DATE(#{date},'YYYYMMDD') + 0.99999
+      ]]>
+	</select>
+	<!-- 멤버리스트 조회 -->
+	<select id="selectMemberList"
+		resultType="com.explorer.routemap.member.vo.MemberVo">
+
+		SELECT * FROM RM_Member
+		<choose>
+			<when test="searchVal == 1">
+				WHERE member_no LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 2">
+				WHERE member_id LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 3">
+				WHERE member_fullname LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 4">
+				WHERE member_fullname LIKE '%' || #{searchWord} || '%'
+			</when>
+			<otherwise>
+				WHERE member_no LIKE '%' || #{searchWord} || '%' OR member_id LIKE '%' ||
+				#{searchWord} || '%' OR member_fullname LIKE '%' || #{searchWord} ||
+				'%' OR member_nickname LIKE '%' || #{searchWord} || '%'
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 멤버카운트 조회 -->
+	<select id="selectMemberCount" resultType="int">
+		SELECT COUNT(*) FROM RM_Member
+		<choose>
+			<when test="searchVal == 1">
+				WHERE member_no LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 2">
+				WHERE member_id LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 3">
+				WHERE member_fullname LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 4">
+				WHERE member_fullname LIKE '%' || #{searchWord} || '%'
+			</when>
+			<otherwise>
+				WHERE member_no LIKE '%' || #{searchWord} || '%' OR member_id LIKE '%' ||
+				#{searchWord} || '%' OR member_fullname LIKE '%' || #{searchWord} ||
+				'%' OR member_nickname LIKE '%' || #{searchWord} || '%'
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 유저레벨확인 -->
+	<select id="selectLelvelByExp"
+		resultType="com.explorer.routemap.member.vo.LevelCategoryVo">
+	    <![CDATA[
+		    SELECT level_category_no
+		    FROM RM_MB_Level_Category
+		    WHERE #{member_levelexp}
+		    BETWEEN minimum_exp AND maximum_exp
+	    ]]>
+	</select>
+	<!-- 회원 상태값 변경 이거 수정해야함! -->
+	<update id="updateMemberStatus">
+		<![CDATA[
+      		UPDATE RM_Member SET member_status = #{status} WHERE member_no = #{memberNo}
+		]]>
+	</update>
+
+	<!-- 여행지/맛집 리스트 조회 -->
+	<select id="selectLocationList"
+		resultType="com.explorer.routemap.board.vo.LocationboardVo">
+		SELECT * FROM RM_Locationboard
+		<choose>
+			<when test="searchVal == 1">
+				WHERE locationboard_no LIKE '%' || #{searchWord} ||
+				'%'
+			</when>
+			<when test="searchVal == 2">
+				WHERE locationboard_title LIKE '%' || #{searchWord}
+				|| '%'
+			</when>
+			<when test="searchVal == 3">
+				WHERE member_no = #{memberNo,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				WHERE locationboard_no LIKE '%' || #{searchWord} || '%' OR
+				locationboard_title LIKE '%' || #{searchWord} || '%' OR member_no =
+				#{memberNo,jdbcType=VARCHAR}
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 여행지/맛집 카운트 조회 -->
+	<select id="selectLocationListCount" resultType="int">
+		SELECT COUNT(*) FROM RM_Locationboard
+		<choose>
+			<when test="searchVal == 1">
+				WHERE locationboard_no LIKE '%' || #{searchWord} ||
+				'%'
+			</when>
+			<when test="searchVal == 2">
+				WHERE locationboard_title LIKE '%' || #{searchWord}
+				|| '%'
+			</when>
+			<when test="searchVal == 3">
+				WHERE member_no = #{memberNo,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				WHERE locationboard_no LIKE '%' || #{searchWord} || '%' OR
+				locationboard_title LIKE '%' || #{searchWord} || '%' OR member_no =
+				#{memberNo,jdbcType=VARCHAR}
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 여행지/맛집 카테고리 조회 -->
+	<select id="selectLocationCategory"
+		resultType="com.explorer.routemap.board.vo.LocationCategoryVo">
+		<![CDATA[
+			SELECT * FROM RM_Lc_Category WHERE location_category_no = #{location_category_no}
+		]]>
+	</select>
+
+	<!-- 여행지/맛집 지역 카테고리 조회 -->
+	<select id="selectProvinceCategory"
+		resultType="com.explorer.routemap.board.vo.ProvinceCategoryVo">
+		<![CDATA[
+			SELECT * FROM RM_Province_Category WHERE province_category_no = #{province_category_no}
+		]]>
+	</select>
+
+	<!-- 여행지/맛집 좋아요 수 조회 -->
+	<select id="selectLocationLike" resultType="int">
+		<![CDATA[
+		SELECT count(*)
+		FROM RM_LC_Like
+		WHERE locationboard_no = #{locationboard_no}
+		]]>
+	</select>
+
+	<!-- 여행지/맛집 멤버번호로 작성자 조회 -->
+	<select id="selectMember" resultType="String">
+		<![CDATA[
+			SELECT member_nickname FROM RM_Member WHERE member_no = #{member_no}
+		]]>
+	</select>
+
+	<!--작성자 이름으로 멤버번호 조회 -->
+	<select id="selectMemberNo" resultType="String">
+		<![CDATA[
+			SELECT member_no FROM RM_Member WHERE member_nickname = #{searchWord}
+		]]>
+	</select>
+
+	<!-- 루트공유 리스트 조회 -->
+	<select id="selectRouteList"
+		resultType="com.explorer.routemap.board.vo.RouteboardVo">
+		SELECT * FROM RM_Routeboard
+		<choose>
+			<when test="searchVal == 1">
+				WHERE routeboard_no LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 2">
+				WHERE routeboard_title LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 3">
+				WHERE member_no = #{memberNo,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				WHERE routeboard_no LIKE '%' || #{searchWord} || '%' OR routeboard_title
+				LIKE '%' || #{searchWord} || '%' OR member_no =
+				#{memberNo,jdbcType=VARCHAR}
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectRouteListCount" resultType="int">
+		SELECT COUNT(*) FROM RM_Routeboard
+		<choose>
+			<when test="searchVal == 1">
+				WHERE routeboard_no LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 2">
+				WHERE routeboard_title LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 3">
+				WHERE member_no = #{memberNo,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				WHERE routeboard_no LIKE '%' || #{searchWord} || '%' OR routeboard_title
+				LIKE '%' || #{searchWord} || '%' OR member_no =
+				#{memberNo,jdbcType=VARCHAR}
+			</otherwise>
+		</choose>
+	</select>
+
+	<!-- 루트공유 첫번째 여행지 번호 찾기 -->
+	<select id="selectRouteProvinceNo" resultType="int">
+		<![CDATA[
+			SELECT locationboard_no FROM RM_Location_Route_Link WHERE routeboard_no = #{routeboard_no} AND link_order = 1
+		]]>
+	</select>
+
+	<!-- 루트공유 좋아요 수 조회 -->
+	<select id="selectRouteLike" resultType="int">
+		<![CDATA[
+			SELECT count(*)
+			FROM RM_RT_Like
+			WHERE routeboard_no = #{routeboard_no}
+		]]>
+	</select>
+
+	<!-- 루트공유 첫번째 여행지 프로빈스 조회 -->
+	<select id="selectLocationProvince" resultType="int">
+		<![CDATA[
+      		SELECT province_category_no FROM RM_Locationboard WHERE locationboard_no = #{locationboard_no}
+		]]>
+	</select>
+
+	<!-- 공지사항 리스트 조회 -->
+	<select id="selectNoticeList"
+		resultType="com.explorer.routemap.clientservice.vo.ClientServiceNoticeVo">
+		SELECT * FROM RM_CS_NOTICE
+		<choose>
+			<when test="searchVal == 1">
+				WHERE notice_title LIKE '%' || #{searchWord} || '%' ORDER BY notice_no
+				DESC
+			</when>
+			<when test="searchVal == 2">
+				WHERE admin_no = #{adminNo,jdbcType=VARCHAR} ORDER BY notice_no DESC
+			</when>
+			<otherwise>
+				WHERE notice_title LIKE '%' || #{searchWord} || '%' OR admin_no =
+				#{adminNo,jdbcType=VARCHAR} ORDER BY notice_no DESC
+			</otherwise>
+		</choose>
+	</select>
+	<!-- 공지사항 리스트 카운트 조회 -->
+	<select id="selectNoticeCount" resultType="int">
+		SELECT COUNT(*) FROM RM_CS_NOTICE
+		<choose>
+			<when test="searchVal == 1">
+				WHERE notice_title LIKE '%' || #{searchWord} || '%'
+			</when>
+			<when test="searchVal == 2">
+				WHERE admin_no = #{adminNo,jdbcType=VARCHAR}
+			</when>
+			<otherwise>
+				WHERE notice_title LIKE '%' || #{searchWord} || '%' OR admin_no =
+				#{adminNo,jdbcType=VARCHAR}
+			</otherwise>
+		</choose>
+	</select>
+
+	<select id="selectAdminNo" resultType="String">
+		<![CDATA[
+			SELECT admin_no FROM RM_Admin WHERE admin_nickname LIKE '%' || #{searchWord} || '%' 
+		]]>
+	</select>
+
+	<select id="selectAdmin" resultType="String">
+		<![CDATA[
+			SELECT admin_nickname FROM RM_Admin WHERE admin_no = #{adminNo}
+		]]>
+	</select>
+
+	<!-- 공지사항 작성 -->
+	<insert id="insertNotice">
+		<![CDATA[
+			INSERT INTO RM_CS_Notice VALUES (RM_CS_Notice_seq.nextval, #{adminNo}, 1, #{noticeTitle}, #{noticeContent}, SYSDATE)
+		]]>
+	</insert>
+
+	<!-- 공지사항 조회 -->
+	<select id="selectNoticeContent"
+		resultType="com.explorer.routemap.clientservice.vo.ClientServiceNoticeVo">
+		<![CDATA[
+			SELECT * FROM RM_CS_Notice WHERE notice_no = #{noticeNo} 
+		]]>
+	</select>
+
+	<!-- 공지사항 수정 -->
+	<update id="updateNotice">
+		<![CDATA[
+			UPDATE RM_CS_Notice SET notice_title = #{noticeTitle} , notice_content = #{noticeContent} WHERE notice_no = #{noticeNo}
+		]]>
+	</update>
+
+	<!-- 공지사항 삭제 -->
+	<delete id="deleteNotice">
+		<![CDATA[
+			DELETE RM_CS_Notice WHERE notice_no = #{noticeNo}
+		]]>
+	</delete>
+
+	<!-- 자주묻는 질문 리스트 조회 -->
+	<select id="selectFaqList"
+		resultType="com.explorer.routemap.clientservice.vo.ClientServiceFaqVo">
+		SELECT * FROM RM_CS_FAQ
+		WHERE faq_title LIKE '%' || #{faqSearchTitle,jdbcType=VARCHAR} || '%'
+		<if test="faqCategoryNo != 0">
+			AND faq_category_no = #{faqCategoryNo}
+		</if>
+	</select>
+
+	<!-- 자주묻는 질문 카운트 조회 -->
+	<select id="selectFaqCount" resultType="int">
+		SELECT COUNT(*) FROM RM_CS_FAQ
+		WHERE faq_title LIKE '%' || #{faqSearchTitle,jdbcType=VARCHAR} || '%'
+		<if test="faqCategoryNo != 0">
+			AND faq_category_no = #{faqCategoryNo}
+		</if>
+	</select>
+
+	<!-- 자주묻는 질문 작성 -->
+	<insert id="insertFaq">
+		<![CDATA[
+			INSERT INTO RM_CS_Faq 
+			VALUES (
+			RM_CS_Faq_seq.nextval,
+			#{admin_no},
+			#{faq_category_no},
+			#{faq_title},
+			#{faq_content},
+			SYSDATE
+			)
+		]]>
+	</insert>
+
+	<!-- 자주묻는 질문 조회 -->
+	<select id="selectByfaqNo"
+		resultType="com.explorer.routemap.clientservice.vo.ClientServiceFaqVo">
+		<![CDATA[
+			SELECT * 
+			FROM RM_CS_Faq
+			WHERE faq_no = #{faqNo}
+		]]>
+	</select>
+
+	<!-- 자주묻는 질문 수정 -->
+	<update id="updateFaq">
+		<![CDATA[
+			UPDATE RM_CS_Faq
+			SET
+			faq_category_no = #{faq_category_no},
+			faq_title = #{faq_title},
+			faq_content = #{faq_content}
+			WHERE faq_no = #{faq_no},
+			faq_writedate = SYSDATE
+		]]>
+	</update>
+
+	<!-- 자주묻는 질문 삭제 -->
+	<delete id="deleteFaq">
+		<![CDATA[
+			DELETE FROM RM_CS_faq
+			WHERE faq_no = #{faq_no}
+		]]>
+	</delete>
+
+	<!-- 자주묻는질문 카테고리 이름검색 -->
+	<select id="selectByfaqCtr"
+		resultType="com.explorer.routemap.clientservice.vo.ClientServiceFaqCategoryVo">
+		<![CDATA[
+			SELECT faq_category_name FROM RM_CS_FAQ_Category
+			WHERE faq_category_no = #{faq_category_no}
+		]]>
+	</select>
+
+	<!-- 전체 사용자 신고 목록 -->
+	<resultMap type="Map" id="memberListMap">
+		<id column="report_no" property="report_no" />
+		<id column="reporting_member_id" property="reporting_member_id" />
+		<id column="reported_member_id" property="reported_member_id" />
+		<id column="report_time" property="report_time" />
+		<id column="report_category_name" property="report_category_name" />
+		<id column="report_status" property="report_status" />
+	</resultMap>
+	<select id="selectAllMemberBlacklist" resultMap="memberListMap">
+	<![CDATA[
+		SELECT report_no, reporting_member_id, reported_member_id, report_time, report_category_name, report_status
+		FROM(
+		     SELECT ROWNUM RNUM, T1.* 
+			 FROM
+		            (SELECT rp.report_no report_no, mb1.member_id reporting_member_id, mb2.member_id reported_member_id, rp.report_time report_time, cg.report_category_name report_category_name, rp.report_status
+		            FROM RM_MB_Report rp, RM_member mb1, RM_member mb2, RM_MB_RP_Category cg
+		            WHERE rp.reporting_member_no = mb1.member_no 
+		            AND rp.reported_member_no = mb2.member_no
+		            AND rp.report_category_no = cg.report_category_no
+		            ORDER BY rp.report_no DESC) t1
+		    )t2
+		WHERE T2.RNUM >= (#{curr_page}-1)*10+1 AND T2.RNUM <= #{curr_page}*10
+	]]>
+	</select>
+	<!-- 전체 사용자 신고 수 -->
+	<select id="AllMemberBlacklistCount" resultType="int">
+	<![CDATA[
+		SELECT count(report_no) FROM RM_MB_Report
+	]]>
+	</select>
+	<!-- 사용자 신고 확인여부 상태 변환 -->
+	<update id="updateMemberReportStatus">
+	<![CDATA[
+		UPDATE RM_MB_Report
+		SET report_status=#{report_status}
+		WHERE report_no=#{report_no}
+	]]>
+	</update>
+	<!-- 사용자 신고 미확인 개수 -->
+	<select id="selectMemberStatusNCount" resultType="int">
+	<![CDATA[
+		SELECT count(report_status)
+		FROM RM_MB_Report
+		WHERE report_status='N'
+	]]>
+	</select>
+	<!-- 여행지/맛집 신고 목록 -->
+	<resultMap type="Map" id="locationListMap">
+		<id column="report_no" property="report_no" />
+		<id column="member_id" property="member_id" />
+		<id column="locationboard_no" property="locationboard_no" />
+		<id column="locationboard_title" property="locationboard_title" />
+		<id column="report_time" property="report_time" />
+		<id column="report_category_name" property="report_category_name" />
+		<id column="report_status" property="report_status" />
+	</resultMap>
+	<select id="selectAllLocationBlacklist"
+		resultMap="locationListMap">
+	<![CDATA[
+		SELECT report_no, member_id, locationboard_no, locationboard_title, report_time, report_category_name, report_status
+		FROM(
+		     SELECT ROWNUM RNUM, T1.* 
+			 FROM
+		            (SELECT rp.report_no report_no, mb.member_id member_id, lb.locationboard_no, lb.locationboard_title locationboard_title, rp.report_time report_time, cg.report_category_name report_category_name, rp.report_status
+		            FROM RM_LC_Report rp, RM_member mb, RM_locationboard lb, RM_LC_RT_RP_Category cg
+		            WHERE rp.member_no = mb.member_no 
+		            AND rp.locationboard_no = lb.locationboard_no
+		            AND rp.report_category_no = cg.report_category_no
+		            ORDER BY rp.report_no DESC) t1
+		    )t2
+		WHERE T2.RNUM >= (#{curr_page}-1)*10+1 AND T2.RNUM <= #{curr_page}*10
+	]]>
+	</select>
+	<!-- 여행지/맛집 게시물 신고 수 -->
+	<select id="AllLocationBlacklistCount" resultType="int">
+	<![CDATA[
+		SELECT count(report_no) FROM RM_LC_Report
+	]]>
+	</select>
+	<!-- 여행지/맛집 신고 확인여부 상태 변환 -->
+	<update id="updateLocationReportStatus">
+	<![CDATA[
+		UPDATE RM_LC_Report
+		SET report_status=#{report_status}
+		WHERE report_no=#{report_no}
+	]]>
+	</update>
+	<!-- 여행지/맛집 게시물 신고 미확인 개수 -->
+	<select id="selectLocationStatusNCount" resultType="int">
+	<![CDATA[
+		SELECT count(report_status)
+		FROM RM_LC_Report
+		WHERE report_status='N'
+	]]>
+	</select>
+	<!-- 루트 신고 목록 -->
+	<resultMap type="Map" id="routeListMap">
+		<id column="report_no" property="report_no" />
+		<id column="member_id" property="member_id" />
+		<id column="routeboard_no" property="routeboard_no" />
+		<id column="routeboard_title" property="routeboard_title" />
+		<id column="report_time" property="report_time" />
+		<id column="report_category_name" property="report_category_name" />
+		<id column="report_status" property="report_status" />
+	</resultMap>
+	<select id="selectAllRouteBlacklist" resultMap="routeListMap">
+	<![CDATA[
+		SELECT report_no, member_id, routeboard_no, routeboard_title, report_time, report_category_name, report_status
+		FROM(
+		     SELECT ROWNUM RNUM, T1.* 
+			 FROM
+		            (SELECT rp.report_no report_no, mb.member_id member_id, rb.routeboard_no routeboard_no, rb.routeboard_title routeboard_title, rp.report_time report_time, cg.report_category_name report_category_name, rp.report_status
+		            FROM RM_RT_Report rp, RM_member mb, RM_routeboard rb, RM_LC_RT_RP_Category cg
+		            WHERE rp.member_no = mb.member_no 
+		            AND rp.routeboard_no = rb.routeboard_no
+		            AND rp.report_category_no = cg.report_category_no
+		            ORDER BY rp.report_no DESC) t1
+		    )t2
+		WHERE T2.RNUM >= (#{curr_page}-1)*10+1 AND T2.RNUM <= #{curr_page}*10
+	]]>
+	</select>
+	<!-- 루트공유 게시물 신고 수 -->
+	<select id="AllRouteBlacklistCount" resultType="int">
+	<![CDATA[
+		SELECT count(report_no) FROM RM_RT_Report
+	]]>
+	</select>
+	<!-- 루트공유 신고 확인여부 상태 변환 -->
+	<update id="updateRouteReportStatus">
+	<![CDATA[
+		UPDATE RM_RT_Report
+		SET report_status=#{report_status}
+		WHERE report_no=#{report_no}
+	]]>
+	</update>
+	<!-- 루트공유 게시물 신고 미확인 개수 -->
+	<select id="selectRouteStatusNCount" resultType="int">
+	<![CDATA[
+		SELECT count(report_status)
+		FROM RM_RT_Report
+		WHERE report_status='N'
+	]]>
+	</select>
+
+	<!-- 1:1 문의 리스트 조회 -->
+	<select id="selectInquiryList"
+		resultType="com.explorer.routemap.clientservice.vo.ClientServiceInquiryVo">
+		SELECT * FROM RM_CS_Inquiry
+		<if test="categoryNo != 0">
+			<choose>
+				<when test="categoryVal == 0">
+					WHERE inquiry_category_no = #{categoryNo} AND (inquiry_title LIKE '%' ||
+					#{searchWord} || '%' OR member_no = #{memberNo,jdbcType=VARCHAR})
+					ORDER BY inquiry_no DESC
+				</when>
+				<when test="categoryVal == 1">
+					WHERE inquiry_category_no = #{categoryNo} AND inquiry_title LIKE '%' ||
+					#{searchWord} || '%' ORDER BY inquiry_no DESC
+				</when>
+				<when test="categoryVal == 2">
+					WHERE inquiry_category_no = #{categoryNo} AND member_no =
+					#{memberNo,jdbcType=VARCHAR} ORDER BY inquiry_no DESC
+				</when>
+			</choose>
+		</if>
+		<if test="categoryNo == 0">
+			<choose>
+				<when test="categoryVal == 0">
+					WHERE inquiry_title LIKE '%' || #{searchWord} || '%' OR member_no =
+					#{memberNo,jdbcType=VARCHAR} ORDER BY inquiry_no DESC
+				</when>
+				<when test="categoryVal == 1">
+					WHERE inquiry_title LIKE '%' || #{searchWord} || '%' ORDER BY inquiry_no
+					DESC
+				</when>
+				<when test="categoryVal == 2">
+					WHERE member_no = #{memberNo,jdbcType=VARCHAR} ORDER BY inquiry_no DESC
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<!-- 1:1 문의 리스트 카운트 조회 -->
+	<select id="selectInquiryCount" resultType="int">
+		SELECT COUNT(*) FROM RM_CS_Inquiry
+
+		<if test="categoryNo != 0">
+			<choose>
+				<when test="categoryVal == 0">
+					WHERE inquiry_category_no = #{categoryNo} AND (inquiry_title LIKE '%' ||
+					#{searchWord} || '%' OR member_no = #{memberNo}) ORDER BY
+					inquiry_no DESC
+				</when>
+				<when test="categoryVal == 1">
+					WHERE inquiry_category_no = #{categoryNo} AND inquiry_title LIKE '%' ||
+					#{searchWord} || '%' ORDER BY inquiry_no DESC
+				</when>
+				<when test="categoryVal == 2">
+					WHERE inquiry_category_no = #{categoryNo} AND member_no = #{memberNo}
+					ORDER BY inquiry_no DESC
+				</when>
+			</choose>
+		</if>
+		<if test="categoryNo == 0">
+			<choose>
+				<when test="categoryVal == 0">
+					WHERE inquiry_title LIKE '%' || #{searchWord} || '%' OR member_no =
+					#{memberNo} ORDER BY inquiry_no DESC
+				</when>
+				<when test="categoryVal == 1">
+					WHERE inquiry_title LIKE '%' || #{searchWord} || '%'
+				</when>
+				<when test="categoryVal == 2">
+					WHERE member_no = #{memberNo} ORDER BY inquiry_no DESC
+				</when>
+			</choose>
+		</if>
+	</select>
+
+	<select id="selectByInquiryCtr" resultType="String">
+		<![CDATA[
+			SELECT inquiry_category_name FROM RM_CS_Inquiry_Category WHERE inquiry_category_no = #{categoryNo}
+		]]>
+	</select>
+</mapper>
+
+
+
+

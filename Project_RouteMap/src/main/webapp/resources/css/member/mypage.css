@@ -1,0 +1,24 @@
+@charset "UTF-8";
+
+.update-info {
+	height: 300px;
+	margin-right:10px
+}
+
+.rank {
+	height: 300px;
+	margin-left:10px
+}
+
+.container {
+	padding-left:200px;
+	padding-right:200px;
+	padding-top: 50px;
+	display:flex;
+	flex-direction:column;
+}
+
+#mypage-nav {
+	border-bottom: 4px solid #58AF9E;
+    padding-bottom: 8px;
+}

@@ -1,0 +1,49 @@
+.fav_green {
+	color:green;
+	cursor:pointer;
+}
+
+.fav_black {
+	color:black;
+	cursor:pointer;
+}
+
+#dropdownMenuButton {
+	color: grey; 
+	padding: 0px; 
+	cursor:pointer;
+	-ms-user-select: none;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+.fa-arrow-circle-up {
+	position: fixed;
+	top:93%;
+	right:2%;
+	z-index:5;
+	color:grey;
+	cursor:pointer 
+}
+
+#small_category > div {
+   margin-right : 1rem;
+   font-weight: bold;
+}
+
+#small_category > div > i {
+   color:#58AE9E;
+   margin-left : 1rem;
+}
+
+#small_category {
+   justify-content: center;
+   padding: 1rem 0rem 0rem 0rem;
+}
+
+.small_category_content {
+   border-right : 1px solid #cccccc;
+   padding-right : 2rem;
+}

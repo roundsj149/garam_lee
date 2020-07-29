@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+aside {
+   width: 100px;
+   height: 700px;
+   background-color: transparent;
+}
+
+.aside_wrap {
+   width: 150px;
+   height: 30px;
+   background-color: transparent;
+   display: inline-block;
+}
+
+.list-box-size {
+   width: 320px;
+   height: 250px;
+}
+
+.list-box-overflow {
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+   width: 180px;
+   height: 30px;
+}
+
+#note-nav {
+	border-bottom: 4px solid #58AF9E;
+    padding-bottom: 8px;
+}

@@ -1,0 +1,299 @@
+/* 부트스트랩 btn-success 클래스 재정의 */
+.tong:hover {
+	box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.12), 0 -1px 2px 0
+		rgba(0, 0, 0, 0.08);
+	-webkit-transform: translateY(-2px);
+}
+
+.btn-outline-success {
+	color: #3D7E72;
+	border-color: #3D7E72;
+}
+
+.btn-outline-success:hover {
+	background-color: #58AF9E;
+	border-color: #58AF9E;
+}
+
+.btn-outline-success:not (:disabled ):not (.disabled ):active, .show>.btn-outline-success.dropdown-toggle
+	{
+	background-color: #3D7E72;
+	border-color: #3D7E72;
+}
+/*
+.input-group-append .btn:focus, .input-group-prepend .btn:focus {
+   box-shadow: 0 0 0 0.2rem rgba(88,175,158,.25);   
+}
+*/
+.btn-outline-success:not(:disabled):not(.disabled).active, .btn-outline-success:not(:disabled):not(.disabled):active, .show>.btn-outline-success.dropdown-toggle {
+    color: #fff;
+    background-color: #3D7E72;
+    border-color: #3D7E72;
+}
+
+.btn-success:not(:disabled):not(.disabled).active, .btn-success:not(:disabled):not(.disabled):active, .show>.btn-success.dropdown-toggle {
+    color: #fff;
+    background-color: #3D7E72;
+    border-color: #3D7E72;
+}
+
+.btn-outline-success:not (:disabled ):not (.disabled ):active:focus, .show>.btn-outline-success.dropdown-toggle:focus {
+	box-shadow: 0 0 0 0.2rem #58AF9E;
+}
+
+.btn-success {
+	background-color: #58AF9E;
+	color: white;
+	border-color: #58AF9E;
+}
+
+.btn-success:hover {
+	background-color: #3D7E72;
+	border-color: #99AEAD;
+	color: white;
+}
+
+.show>.btn-success.dropdown-toggle {
+	background-color: #3D7E72;
+	border-color: #99AEAD;
+	color: white;
+}
+
+.btn-success:not (:disabled ):not (.disabled ):active, .show>.btn-success.dropdown-toggle
+	{
+	color: white;
+	background-color: #58AF9E;
+	border-color: #58AF9E;
+}
+
+.btn-success.focus, .btn-success:focus {
+	color: white;
+	background-color: #58AF9E;
+	border-color: #58AF9E;
+}
+
+.squaredThree {
+	position: relative;
+	float: left;
+}
+
+.squaredThree label {
+	width: 20px;
+	height: 20px;
+	cursor: pointer;
+	position: absolute;
+	top: 0;
+	left: 0;
+	background: #D7B1D7;
+	border-radius: 4px;
+	box-shadow: inset 0px 1px 1px rgba(0, 0, 0, 0.5), 0px 1px 0px
+		rgba(255, 255, 255, 0.4);
+}
+
+.squaredThree label:after {
+	content: '';
+	width: 9px;
+	height: 5px;
+	position: absolute;
+	top: 4px;
+	left: 4px;
+	border: 3px solid #fcfff4;
+	border-top: none;
+	border-right: none;
+	background: transparent;
+	opacity: 0;
+	-webkit-transform: rotate(-45deg);
+	transform: rotate(-45deg);
+}
+
+/*
+.squaredThree label:hover::after {
+  opacity: 0.3;
+}
+
+.squaredThree input[type=checkbox] {
+  visibility: hidden;
+}
+
+.squaredThree input[type=checkbox]:checked + label:after {
+  opacity: 1;
+}
+*/
+
+.custom-link  {
+	color : black;
+}
+
+.custom-link:hover {
+	color : #58AF9E;
+	font-weight:bold;
+	text-decoration: none;
+}
+
+.page-item.active .page-link {
+	background-color: #58AF9E;
+	border-color: #58AF9E;
+}
+
+.page-link {
+	color: #58AF9E;
+}
+
+.page-link:hover {
+	color: #58AF9E;
+}
+
+.page-item.active .page-link {
+	color:white
+}
+
+.form-control:focus {
+	border-color: #58AF9E;
+	box-shadow: 0 0 0 0.2rem rgba(88, 175, 158, .25);
+}
+
+.custom-select:focus {
+	border-color: #58AF9E;
+	box-shadow: 0 0 0 0.2rem rgba(88, 175, 158, .25);
+}
+
+/* 체크박스 디자인 */
+.checkbox-container {
+	position: relative;
+}
+
+/*기본 체크박스 없애기*/
+.checkbox-container input[type="checkbox"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0
+}
+
+/*웹의 경우 커서에 pointer 설정*/
+.checkbox-container input[type="checkbox"]+label {
+	display: inline-block;
+	position: relative;
+	cusor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/*새로운 디자인의 체크박스 만들기*/
+.checkbox-container input[type="checkbox"]+label:before {
+	content: ' ';
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	line-height: 16px;
+	margin: -2px 8px 0 0;
+	text-align: center;
+	vertical-align: middle;
+	background: #fffff;
+	border: 1px solid #58AF9E;
+	border-radius: 3px;
+}
+
+.checkbox-container input[type="checkbox"]+label:active:before,
+	.checkbox-container input[type="checkbox"]:checked+label:active:before
+	{
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05), inset 0px 1px 3px
+		rgba(0, 0, 0, 0.1);
+}
+
+.checkbox-container input[type="checkbox"]+label:hover {
+	
+	color:#58AF9E;
+}
+
+.checkbox-container input[type="checkbox"]:checked+label:before {
+	content: "\f00c";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	color: #58AF9E;
+	text-shadow: 1px 1px white;
+	border-radius: 5px;
+	border-color: #58AF9E;
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05), inset 0px -15px 10px -12px
+		rgba(0, 0, 0, 0.05);
+}
+
+/* 라디오버튼 디자인 */
+.radio-container {
+	position: relative;
+}
+
+/*기본 라디오버튼 없애기*/
+.radio-container input[type="radio"] {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	border: 0;
+}
+
+
+/*웹의 경우 커서에 pointer 설정*/
+.radio-container input[type="radio"]+label {
+	display: inline-block;
+	position: relative;
+	cusor: pointer;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+/*새로운 디자인의 라디오버튼 만들기*/
+.radio-container input[type="radio"]+label:before {
+	
+	content: '\f111';
+	color:#58AF9E;
+	font-family: "Font Awesome 5 Free";
+	font-weight: 300;
+	margin: -2px 8px 0 0;
+	display: inline-block;
+
+}
+
+.radio-container input[type="radio"]+label:hover {
+	
+	color:#58AF9E;
+}
+
+.radio-container input[type="radio"]+label:active:before,
+	.radio-container input[type="radio"]:checked+label:active:before {
+	box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05), inset 0px 1px 3px
+		rgba(0, 0, 0, 0.1);
+
+}
+
+.radio-container input[type="radio"]:checked+label:before {
+	content: "\f192";
+	font-family: "Font Awesome 5 Free";
+	font-weight: 900;
+	color: #58AF9E;
+	border-radius: 100%;
+	border-color: #58AF9E;
+
+}
+
+.custom-select option:checked {
+	background-color:#58AF9E;
+	color:white;
+}
+
+.list-group-item.active {
+    background-color: #58AF9E;
+    border-color: #58AF9E;
+    color:white
+}

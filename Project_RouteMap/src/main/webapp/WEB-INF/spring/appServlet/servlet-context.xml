@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans
+	xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc https://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context https://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.3.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing 
+		infrastructure -->
+
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<annotation-driven />
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving 
+		up static resources in the ${webappRoot}/resources directory -->
+	<resources mapping="/resources/**" location="/resources/" />
+
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources 
+		in the /WEB-INF/views directory -->
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+
+	<beans:bean id="multipartResolver"
+		class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+		<beans:property name="maxUploadSize" value="200000000" />
+	</beans:bean>
+
+	<beans:bean
+		class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/jsp/" />
+		<beans:property name="suffix" value=".jsp" />
+		<beans:property name="viewClass"
+			value="org.springframework.web.servlet.view.JstlView" />
+	</beans:bean>
+
+	<beans:bean
+		class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<beans:property name="supportedMediaTypes">
+			<beans:list>
+				<beans:value>application/json; charset=UTF-8</beans:value>
+			</beans:list>
+		</beans:property>
+	</beans:bean>
+
+	<!-- 인터셉터 객체 생성 -->
+	<beans:bean id="authenticationInterceptor"
+		class="com.explorer.routemap.member.controller.AuthenticationInterceptor">
+	</beans:bean>
+	<!-- Interceptor 설정 -->
+	<interceptors>
+		<interceptor>
+			<mapping path="/**/" />
+			<beans:ref bean="authenticationInterceptor" />
+		</interceptor>
+	</interceptors>
+
+	<!-- servlet-context.xml : 메일 인증 발송용 빈 추가 -->
+	<beans:bean id="mailSender"
+		class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<beans:property name="host" value="smtp.gmail.com" />
+		<beans:property name="port" value="587" />
+		<beans:property name="username"
+			value="testmonrad@gmail.com" />
+		<beans:property name="password"
+			value="mwdcwqzwlsvoudil" />
+		<!-- servlet-context.xml : email 요청시는 SMTP -->
+		<beans:property name="javaMailProperties">
+			<beans:props>
+				<beans:prop key="mail.transport.protocol">smtp</beans:prop>
+				<beans:prop key="mail.smtp.auth">true</beans:prop>
+				<beans:prop key="mail.smtp.starttls.enable">true</beans:prop>
+				<beans:prop key="mail.debug">false</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+	
+	<!-- servlet-context.xml : Anottation scan 구역 설정 - AOP 관련 -->
+	<context:component-scan
+		base-package="com.explorer.routemap" />
+		
+	<!-- servlet-context.xml : Aspect 설정 - AOP 관련 -->
+	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
+	<!-- controller-scan -->
+	<context:component-scan
+		base-package="com.explorer.routemap.home.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.member.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.board.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.clientservice.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.myfar.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.note.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.admin.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.error.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.captcha.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.report.controller" />
+	<context:component-scan
+		base-package="com.explorer.routemap.popchat.controller" />
+</beans:beans>

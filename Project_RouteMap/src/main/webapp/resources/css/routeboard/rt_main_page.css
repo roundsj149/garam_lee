@@ -1,0 +1,120 @@
+@charset "UTF-8";
+
+aside {
+   width: 100px;
+   height: 700px;
+   background-color: #transparent;
+   margin-right: .05rem solid #e5e5e5;
+}
+
+.aside_wrap {
+   width: 150px;
+   height: 30px;
+   background-color: transparent;
+   display: inline-block;
+}
+
+.list-container {
+   display: flex;
+   flex-direction: row;
+   flex-wrap: wrap;
+   justify-content: flex-start;
+   align-content: flex-start;
+}
+
+.list-box-size {
+   width: 350px;
+   height: 250px;
+}
+
+.list-box-overflow {
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+   width: 835px;
+   height: 30px;
+}
+
+.list-title-overflow {
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+   width: 835px;
+   height: 30px;
+}
+
+.fav_green {
+   color:green;
+   cursor:pointer;
+}
+
+.fav_black {
+   color:black;
+   cursor:pointer;
+}
+
+h5.search {
+   padding-top:10px
+}
+
+.clickCheckbox {
+   cursor: pointer;
+   -ms-user-select: none;
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   user-select: none;
+}
+
+#checkAllCost {
+   margin-left:40px
+}
+
+#checkAllType {
+   margin-left:40px
+}
+
+#checkAllTime {
+   margin-left:40px
+}
+
+#checkAllMood {
+   margin-left:40px
+}
+
+.fa-arrow-circle-up {
+   position: fixed;
+   top:93%;
+   right:2%;
+   z-index:5;
+   color:grey;
+   cursor:pointer 
+}
+
+#detailSearch_button {
+   padding:1rem 0rem 1rem 0rem;
+   text-align:center;
+}
+
+#detailSearch_button > button {
+   margin-top : 1rem;
+   width:20%;
+}
+
+#detailSearch {
+   padding : 1rem 3rem 0rem 3rem;
+   text-align:center;
+}
+#detailSearch > li {
+   padding:1rem 0rem 0rem 0rem;
+}
+
+#detailSearch > li > label {
+   margin-right : 0.5rem;
+   margin-left : 0.2rem;
+}
+
+#route-nav {
+	border-bottom: 4px solid #58AF9E;
+    padding-bottom: 8px;
+}

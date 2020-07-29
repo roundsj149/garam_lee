@@ -1,0 +1,19 @@
+@charset "UTF-8";
+body, input, textarea, select, button, table {
+   font-family: 'Noto Sans KR', AppleGothic, sans-serif;
+}
+footer{
+   font-size: 12px;
+}
+
+ul, li {
+   list-style: none;
+}
+
+.header-font .nav-font-size{
+      font-size:15px;
+}
+
+.nav-font .nav-font-size{
+      font-size:18px;
+}

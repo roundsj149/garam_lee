@@ -1,0 +1,337 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.explorer.routemap.member.mapper.MemberSQLMapper">
+	<!-- id = "메소드명" -->
+
+	<!-- 회원 가입 키 생성 -->
+	<select id="createMemberKey" resultType="int">
+      <![CDATA[
+      SELECT RM_Member_Seq.nextval 
+      FROM DUAL
+      ]]>
+	</select>
+	<!-- 회원 가입 -->
+	<insert id="insert">
+      <![CDATA[
+      INSERT INTO RM_Member
+      VALUES(
+      #{member_no},
+      1,
+      #{member_id},
+      #{member_pw},
+      #{member_nickname},
+      #{member_fullname},
+      #{member_gender},
+      #{member_birth},
+      #{member_phone},
+      SYSDATE,
+      null,
+      null,
+      'Y',
+      0)
+      ]]>
+	</insert>
+
+	<!-- 회원 로그인(아이디, 패스워드 확인) -->
+	<select id="selectByIdAndPw"
+		resultType="com.explorer.routemap.member.vo.MemberVo">
+   <![CDATA[
+      SELECT * 
+      FROM RM_MEMBER 
+      WHERE MEMBER_ID = #{member_id}
+      AND MEMBER_PW = #{member_pw}
+   ]]>
+	</select>
+
+	<!-- 관리자 로그인(아이디, 패스워드 확인) -->
+	<select id="selectAdminByIdAndPw"
+		resultType="com.explorer.routemap.admin.vo.AdminVo">
+   <![CDATA[
+      SELECT * 
+      FROM RM_Admin 
+      WHERE admin_id = #{admin_id}
+      AND admin_pw = #{admin_pw}
+   ]]>
+	</select>
+
+	<!-- 게시글 작성자 확인 -->
+	<select id="selectByMemberNo"
+		resultType="com.explorer.routemap.member.vo.MemberVo">
+      <![CDATA[
+      SELECT *
+      FROM RM_Member
+      WHERE member_no = #{member_no}
+      ]]>
+	</select>
+	<!-- 로그인된 경우 해당 세션id와 유효시간을 사용자 테이블에 세팅한다. -->
+	<update id="keepLogin">
+    <![CDATA[
+        UPDATE RM_Member
+        SET sessionKey = #{sessionId}, sessionLimit = #{next}
+        WHERE member_id=#{member_id}
+    ]]>
+	</update>
+
+	<!-- 유효기간이 남아 있으면서 해당 sessionId를 가지는 사용자 정보를 꺼내오는 부분 -->
+	<select id="checkUserWithSessionKey"
+		resultType="com.explorer.routemap.member.vo.MemberVo">
+    <![CDATA[
+    SELECT * 
+    FROM 
+    RM_Member
+    WHERE sessionKey = #{sessionId}
+    ]]>
+	</select>
+
+	<!-- 아이디 중복확인 -->
+	<select id="selectMemberId" resultType="String">
+	<![CDATA[
+	    SELECT member_id
+	    FROM 
+	    RM_Member
+	    WHERE member_id=#{member_id}
+    ]]>
+	</select>
+
+	<!-- 닉네임 중복확인 -->
+	<select id="selectMemberNick" resultType="String">
+	<![CDATA[
+	    SELECT member_nickname
+	    FROM 
+	    RM_Member
+	    WHERE member_nickname=#{member_nickname}
+    ]]>
+	</select>
+	<!-- 비밀번호 변경 -->
+	<update id="updatePw">
+    <![CDATA[
+        UPDATE RM_Member
+        SET member_pw = #{member_pw}
+        WHERE member_id=#{member_id}
+    ]]>
+	</update>
+	<!-- 닉네임 변경 -->
+	<update id="updateNickname">
+    <![CDATA[
+        UPDATE RM_Member
+        SET member_nickname = #{member_nickname}
+        WHERE member_id=#{member_id}
+    ]]>
+	</update>
+	<!-- 생년월일 변경 -->
+	<update id="updateBirthday">
+    <![CDATA[
+        UPDATE RM_Member
+        SET member_birth = #{member_birth}
+        WHERE member_id=#{member_id}
+    ]]>
+	</update>
+	<!-- 휴대전화 변경 -->
+	<update id="updatePhone">
+    <![CDATA[
+        UPDATE RM_Member
+        SET member_phone = #{member_phone}
+        WHERE member_id=#{member_id}
+    ]]>
+	</update>
+	<!-- 회원 탈퇴 -->
+	<update id="updateMember">
+    <![CDATA[
+        UPDATE RM_Member
+        SET member_status = 'N'
+        WHERE member_id = #{member_id}
+        AND member_pw = #{member_pw}
+    ]]>
+	</update>
+
+	<!-- 경험치 획득 - 게시글 쓰기 -->
+	<update id="getExpByPost">
+   <![CDATA[
+      UPDATE RM_Member
+      SET member_levelexp = (#{member_levelexp} + 10) 
+      WHERE member_no = #{member_no}
+    ]]>
+	</update>
+
+	<!-- 경험치 획득 - 댓글 쓰기 -->
+	<update id="getExpByReply">
+   <![CDATA[
+      UPDATE RM_Member
+      SET member_levelexp = (#{member_levelexp} + 5) 
+      WHERE member_no = #{member_no}
+    ]]>
+	</update>
+
+	<!-- 경험치 획득 - 좋아요 : 글쓴이가 획득 -->
+	<update id="getExpByLike">
+   <![CDATA[
+      UPDATE RM_Member
+      SET member_levelexp = (#{member_levelexp} + 5) 
+      WHERE member_no = #{member_no}
+    ]]>
+	</update>
+
+	<!-- 경험치 획득 - 관심 등록 : 글쓴이가 획득 -->
+	<update id="getExpByFavorite">
+   <![CDATA[
+      UPDATE RM_Member
+      SET member_levelexp = (#{member_levelexp} + 10) 
+      WHERE member_no = #{member_no}
+    ]]>
+	</update>
+
+	<!-- 경험치 감소 - 게시글 삭제 -->
+	<update id="loseExpByPost">
+   <![CDATA[
+      UPDATE RM_Member
+      SET member_levelexp = (#{member_levelexp} - 10) 
+      WHERE member_no = #{member_no}
+    ]]>
+	</update>
+
+	<!-- 경험치 감소 - 댓글 삭제 -->
+	<update id="loseExpByReply">
+   <![CDATA[
+      UPDATE RM_Member
+      SET member_levelexp = (#{member_levelexp} - 5) 
+      WHERE member_no = #{member_no}
+    ]]>
+	</update>
+
+	<!-- 경험치 감소 - 좋아요 취소 : 글쓴이가 감소 -->
+	<update id="loseExpByLike">
+   <![CDATA[
+      UPDATE RM_Member
+      SET member_levelexp = (#{member_levelexp} - 5) 
+      WHERE member_no = #{member_no}
+    ]]>
+	</update>
+
+	<!-- 경험치 감소 - 관심 등록 취소 : 글쓴이가 감소 -->
+	<update id="loseExpByFavorite">
+   <![CDATA[
+      UPDATE RM_Member
+      SET member_levelexp = (#{member_levelexp} - 10) 
+      WHERE member_no = #{member_no}
+    ]]>
+	</update>
+	<!-- 회원 번호로 회원 정보 가져오기 -->
+	<select id="selectMemberByMemberNo"
+		resultType="com.explorer.routemap.member.vo.MemberVo">
+      <![CDATA[
+      SELECT *
+      FROM rm_member
+      WHERE member_no = #{member_no}
+      ]]>
+	</select>
+	<!-- 쪽지 받는 사람 아이디의 회원번호를 받기 위한 메서드 -->
+	<select id="selectByMemberId" resultType="int">
+    <![CDATA[
+	SELECT MEMBER_NO
+	FROM RM_MEMBER 
+	WHERE MEMBER_ID = #{member_id}
+    ]]>
+	</select>
+		<!-- 쪽지 받는 사람 아이디의 회원번호를 받기 위한 메서드 -->
+	<select id="getMemberId" resultType="com.explorer.routemap.member.vo.MemberVo">
+    <![CDATA[
+	SELECT member_id, member_login_trial, member_status
+	FROM RM_MEMBER 
+	WHERE member_id = #{member_id}
+	AND member_pw != #{member_pw}
+    ]]>
+	</select>
+	
+	<!-- 로그인 실패 회수 1 증가 -->
+	<update id="updateMemberLoginTrial">
+	<![CDATA[
+	UPDATE RM_MEMBER
+	SET member_login_trial = member_login_trial+1
+	WHERE member_id=#{member_id}
+	]]>
+	</update>
+	
+	<!-- 로그인 성공 - 로그인 실패 회수 초기화(0으로) -->
+	<update id="resetMemberLoginTrial">
+	<![CDATA[
+	UPDATE RM_MEMBER
+	SET member_login_trial = 0
+	WHERE member_id=#{member_id}
+	]]>
+	</update>
+	<!-- 관리자 아이디 중복확인 -->
+	<select id="selectAdminId" resultType="String">
+	<![CDATA[
+	    SELECT admin_id
+	    FROM 
+	    RM_Admin
+	    WHERE admin_id=#{admin_id}
+    ]]>
+	</select>
+	<!-- 관리자 닉네임 중복확인 -->
+	<select id="selectAdminNick" resultType="String">
+	<![CDATA[
+	    SELECT admin_nickname
+	    FROM 
+	    RM_Admin
+	    WHERE admin_nickname=#{admin_nickname}
+    ]]>
+	</select>
+	<!--관리자 회원 가입 키 생성 -->
+	<select id="createAdminKey" resultType="int">
+      <![CDATA[
+      SELECT RM_Admin_Seq.nextval 
+      FROM DUAL
+      ]]>
+	</select>
+
+	<!-- 관리자 회원가입 -->
+	<insert id="insertAdmin">
+      <![CDATA[
+      INSERT INTO RM_Admin
+      VALUES(
+      #{admin_no},
+      #{admin_id},
+      #{admin_pw},
+      #{admin_nickname},
+      #{admin_fullname},
+      #{admin_gender},
+      #{admin_birth},
+      #{admin_phone},
+      SYSDATE,
+      'Y',
+      0
+      )
+      ]]>
+	</insert>
+
+	<!-- 관리자 로그인 실패 회수 1 증가 -->
+	<update id="updateAdminLoginTrial">
+	<![CDATA[
+	UPDATE RM_Admin
+	SET admin_login_trial = admin_login_trial+1
+	WHERE admin_id=#{admin_id}
+	]]>
+	</update>
+
+	<!-- 관리자 아이디만 맞고 비번만 틀렸을 경우 -->
+	<select id="getAdminId" resultType="com.explorer.routemap.admin.vo.AdminVo">
+    <![CDATA[
+	SELECT admin_id, admin_login_trial, admin_status
+	FROM RM_Admin 
+	WHERE admin_id = #{admin_id}
+	AND admin_pw != #{admin_pw}
+    ]]>
+	</select>
+
+	<!-- 관리자 로그인 실패 횟수 초기화 -->
+	<update id="resetAdminLoginTrial">
+	<![CDATA[
+	UPDATE RM_Admin
+	SET admin_login_trial = 0
+	WHERE admin_id=#{admin_id}
+	]]>
+	</update>
+</mapper>

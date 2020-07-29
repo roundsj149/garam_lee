@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.explorer.routemap.uploadfile.mapper.PopchatUploadFileSQLMapper">
+
+	<!-- 채팅창 파일 업로드 -->
+	<insert id="insertFiles">
+      <![CDATA[
+         INSERT INTO RM_PC_Upload_File
+         VALUES(RM_PC_Upload_File_Seq.nextval,
+               #{popchat_no},
+               #{popchat_file_originalname},
+               #{popchat_file_link_path},
+               #{popchat_file_real_path},
+               SYSDATE)
+      ]]>
+	</insert>
+
+	<!-- 채팅창 파일 - 불러오기 by 채팅창 번호 -->
+	<select id="selectByPopchatNo"
+		resultType="com.explorer.routemap.uploadfile.vo.PopchatUploadFileVo">
+   <![CDATA[
+	   SELECT *
+	   FROM RM_PC_Upload_File
+	   WHERE popchat_no = #{popchat_no}
+   ]]>
+	</select>
+
+</mapper>

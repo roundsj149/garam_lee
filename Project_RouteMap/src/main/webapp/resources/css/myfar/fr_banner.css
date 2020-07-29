@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+.banner{
+   width: 170px; 
+   height: 300px; 
+   overflow: hidden;
+}
+.banner-img{
+   width: 170px; 
+   height: auto;
+}

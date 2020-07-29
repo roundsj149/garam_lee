@@ -1,0 +1,164 @@
+.fav_green {
+   color: green;
+   cursor: pointer;
+}
+
+.fav_black {
+   color: black;
+   cursor: pointer;
+}
+
+#dropdownMenuButton {
+   color: grey; 
+   padding: 0px; 
+   cursor:pointer;
+   -ms-user-select: none;
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   user-select: none;
+}
+
+.content_hide {
+   width: 40rem;
+   display:none
+   
+}
+
+.content_show {
+   margin-left:30px;
+   width: 55rem;
+   display:block;
+   animation:slide 1s;
+}
+
+ @keyframes slide {
+      0% {margin-left:-1%;}
+      100% {margin-left:30px;}
+    }
+
+
+.select_content {
+   cursor: pointer;
+   -ms-user-select: none;
+   -moz-user-select: -moz-none;
+   -khtml-user-select: none;
+   -webkit-user-select: none;
+   user-select: none;
+}
+
+.icon {
+   cursor: pointer;
+    -webkit-transition: transform 1s;
+    -moz-transition: transform 1s;
+    -o-transition: transform 1s;
+    transition: transform 1s;
+    color:#003300;
+}
+
+.icon:hover {
+   -webkit-transform: rotate(20deg);
+   -ms-transform: rotate(20deg);
+   -moz-transform: rotate(20deg);
+   -o-transform: rotate(20deg);
+   transform: rotate(20deg);
+}
+
+
+.triangle-border {
+   word-break:keep-all;
+   font-size:13px;
+    position: relative;
+    padding: 20px;
+    border: 5px solid #003300;
+    color: #003300;
+    background: #fff;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+}
+.triangle-border.left:after {
+    top: 16px;
+    bottom: auto;
+    left: -21px;
+    border-width: 9px 21px 9px 0;
+    border-color: transparent #fff;
+}
+.triangle-border:after {
+    content: "";
+    position: absolute;
+    bottom: -13px;
+    left: 47px;
+    border-width: 13px 13px 0;
+    border-style: solid;
+    border-color: #fff transparent;
+    display: block;
+    width: 0;
+}
+
+.triangle-border.left:before {
+    top: 10px;
+    bottom: auto;
+    left: -30px;
+    border-width: 15px 30px 15px 0;
+    border-color: transparent #003300;
+}
+.triangle-border:before {
+    content: "";
+    position: absolute;
+    bottom: -20px;
+    left: 40px;
+    border-width: 20px 20px 0;
+    border-style: solid;
+    border-color: #003300 transparent;
+    display: block;
+    width: 0;
+}
+
+strong {
+   font-size:18px
+}
+
+.fa-arrow-circle-up {
+   position: fixed;
+   top:93%;
+   right:2%;
+   z-index:5;
+   color:grey;
+   cursor:pointer 
+}
+
+#small_category > div {
+   margin-right : 1rem;
+   font-weight: bold;
+}
+
+#small_category > div > i {
+   color:#58AE9E;
+   margin-left : 1rem;
+}
+
+#small_category {
+   justify-content: center;
+   padding: 1rem 0rem 0rem 0rem;
+}
+
+.small_category_content {
+   border-right : 1px solid #cccccc;
+   padding-right : 2rem;
+}
+
+#location_title {
+   justify-content: center;
+   font-size: xx-large;
+   padding: 1rem;
+}
+
+#location_box {
+   box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+   margin-top : 2rem;
+}
+
+#location_content {
+   box-shadow: 0 .125rem .25rem rgba(0,0,0,.075)!important;
+}

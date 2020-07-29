@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.explorer.routemap.clientservice.mapper.ClientServiceSQLMapper">
+
+	<select id="createKey" resultType="int">
+		SELECT RM_CS_Inquiry_seq.nextval FROM DUAL
+	</select>
+	
+	<insert id="insert" parameterType="com.explorer.routemap.clientservice.vo.ClientServiceInquiryVo">
+	<!-- 	<selectKey keyProperty="inquiry_no" resultType="int" order="BEFORE">
+	    	select RM_CS_Inquiry_seq.nextval FROM DUAL
+	  	</selectKey> -->
+		<![CDATA[
+			INSERT INTO RM_CS_Inquiry			
+			VALUES (
+			#{inquiry_no},
+			#{member_no},
+			#{inquiry_category_no},
+			#{inquiry_title},
+			#{inquiry_content},
+			SYSDATE,
+			'N'
+			)
+		]]>
+	
+	</insert>
+	
+		
+	<insert id="insertFaq">
+		<![CDATA[
+			INSERT INTO RM_CS_Faq 
+			VALUES (
+			RM_CS_Faq_seq.nextval,
+			#{admin_no},
+			#{faq_category_no},
+			#{faq_title},
+			#{faq_content}
+			)
+		]]>
+	</insert>
+	
+	<insert id="insertUploadFile" parameterType="com.explorer.routemap.clientservice.vo.ClientServiceInquiryUploadFileVo">
+		<![CDATA[
+			INSERT INTO RM_CS_Inquiry_Upload_File
+			VALUES (
+			RM_CS_Inquiry_Upload_File_seq.nextval,
+			#{inquiry_no},
+			#{inquiry_file_link_path},
+			#{inquiry_file_real_path},
+			SYSDATE
+			)
+		]]>
+	</insert>
+
+	<select id="selectByMember_no" resultType="com.explorer.routemap.clientservice.vo.ClientServiceInquiryVo">
+		<![CDATA[
+			SELECT ROWNUM inquiry_row, X.*
+			FROM (SELECT a.*
+			FROM RM_CS_Inquiry a
+			WHERE
+			a.member_no = #{member_no}) X
+			ORDER BY inquiry_row DESC
+		]]>
+	</select>
+	
+	<select id="selectByfaqNo" resultType="com.explorer.routemap.clientservice.vo.ClientServiceFaqVo">
+		<![CDATA[
+			SELECT * 
+			FROM RM_CS_Faq
+			WHERE faq_no = #{faqNo}
+		]]>
+	</select>
+	
+	<select id="selectInquiryCount" resultType="int">
+		<![CDATA[
+			SELECT COUNT(*)
+			FROM RM_CS_Inquiry
+			WHERE member_no = #{member_no}
+		]]>
+	</select>
+	
+	<select id="selectByInquiry_no" resultType="com.explorer.routemap.clientservice.vo.ClientServiceInquiryUploadFileVo">
+		<![CDATA[
+			SELECT * 
+			FROM RM_CS_Inquiry_Upload_File 
+			WHERE 
+			inquiry_no = #{inquiry_no}
+		]]>
+	</select>
+	
+	<select id="selectByInquiryNoDetail" resultType="com.explorer.routemap.clientservice.vo.ClientServiceInquiryVo">
+		<![CDATA[
+			SELECT *
+			FROM RM_CS_Inquiry
+			WHERE
+			inquiry_no = #{inquiry_no}
+		]]>
+	</select>
+	
+	<select id="selectNotice" resultType="com.explorer.routemap.clientservice.vo.ClientServiceNoticeVo"> 
+		<![CDATA[
+	   	 	SELECT * FROM RM_CS_Notice
+	   		ORDER BY notice_no DESC
+		]]>
+	</select>
+	
+	<select id="selectNoticeByTitle" resultType="com.explorer.routemap.clientservice.vo.ClientServiceNoticeVo">
+		<![CDATA[
+	   	 	SELECT * FROM RM_CS_Notice
+	   	 	WHERE notice_title LIKE '%' || #{searchTitle} || '%'
+	   		ORDER BY notice_no DESC
+		]]>
+	</select>
+	
+	<select id="selectNoticeByNo" resultType="com.explorer.routemap.clientservice.vo.ClientServiceNoticeVo">
+		<![CDATA[
+			SELECT *
+			FROM RM_CS_Notice
+			WHERE
+			notice_no = #{notice_no}
+		]]>
+	</select>
+	
+	<select id="selectFaqList" resultType="com.explorer.routemap.clientservice.vo.ClientServiceFaqVo">	
+			SELECT * FROM RM_CS_FAQ
+			WHERE faq_title LIKE '%' || #{faqSearchTitle,jdbcType=VARCHAR} || '%'
+       		<if test="faqCategoryNo != null">
+       		AND faq_category_no = #{faqCategoryNo}				
+       		</if>
+	</select>
+	
+	<select id="selectFaqCount" resultType="int">
+			SELECT COUNT(*) FROM RM_CS_FAQ
+			WHERE faq_title LIKE '%' || #{faqSearchTitle,jdbcType=VARCHAR} || '%'
+       		<if test="faqCategoryNo != null">
+       		AND faq_category_no = #{faqCategoryNo}
+       		</if>
+	</select>
+	
+	<select id="selectNoticeAllCount" resultType="int">
+		<![CDATA[
+			SELECT COUNT(*) FROM RM_CS_Notice
+		]]>
+	</select>
+	
+	<select id="selectNoticeCountByTitle" resultType="int">
+		<![CDATA[
+			SELECT COUNT(*) FROM RM_CS_Notice
+			WHERE notice_title LIKE '%' || #{searchTitle} ||'%'
+		]]>
+	</select>
+
+	<delete id="deleteInquiry">
+		<![CDATA[
+			DELETE RM_CS_Inquiry
+            WHERE inquiry_no = #{deleteInquiryNo}
+		]]>
+	</delete>
+	
+	<update id="updateInquiry">
+		<![CDATA[
+			UPDATE RM_CS_Inquiry 
+			SET
+			inquiry_category_no = #{inquiry_category_no},
+			inquiry_title = #{inquiry_title},
+			inquiry_content = #{inquiry_content}
+			WHERE inquiry_no = #{inquiry_no}
+		]]>
+	</update>
+	
+	<update id="updateInquiryUpload">
+		<![CDATA[
+			UPDATE RM_CS_Inquiry_Upload_File
+			SET
+			inquiry_file_link_path = #{inquiry_file_link_path},
+			inquiry_file_real_path = #{inquiry_file_real_path}
+			WHERE inquiry_no = #{inquiry_no}
+		]]>
+	</update>
+	
+	<select id="selectInquiryCategory" resultType="String">
+		<![CDATA[
+			SELECT Inquiry_category_name FROM RM_CS_Inquiry_Category
+			WHERE inquiry_category_no = #{inquiry_category_no}
+		]]>
+	</select>
+	
+	<delete id="deleteInquiryUpload">
+		<![CDATA[
+			DELETE FROM RM_CS_Inquiry_Upload_File
+			WHERE inquiry_no = #{inquiry_no}
+		]]>
+	</delete>
+	
+	<update id="updateFaq">
+		<![CDATA[
+			UPDATE RM_CS_Faq
+			SET
+			faq_category_no = #{faq_category_no},
+			faq_title = #{faq_title},
+			faq_content = #{faq_content}
+			WHERE faq_no = #{faq_no}
+		]]>
+	</update>
+	
+	<delete id="deleteFaq">
+		<![CDATA[
+			DELETE FROM RM_CS_faq
+			WHERE faq_no = #{faq_no}
+		]]>
+	</delete>
+
+	
+</mapper>

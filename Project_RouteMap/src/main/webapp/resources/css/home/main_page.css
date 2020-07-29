@@ -1,0 +1,41 @@
+@charset "UTF-8";
+
+aside {
+   width: 100px;
+   height: 700px;
+   background-color: #dee1dd;
+}
+
+.aside_wrap {
+   width: 150px;
+   height: 50px;
+   background-color: transparent;
+   display: inline-block;
+}
+
+
+.list-box-size {
+   width: 320px;
+   height: 250px;
+}
+
+.list-box-overflow {
+   overflow: hidden;
+   text-overflow: ellipsis;
+   white-space: nowrap;
+   width: 180px;
+   height: 30px;
+}
+
+.fa-arrow-circle-up {
+	position: fixed;
+	top:93%;
+	right:2%;
+	z-index:5;
+	color:grey;
+	cursor:pointer 
+}
+
+.z-index-m10{
+   z-index : -10;
+}

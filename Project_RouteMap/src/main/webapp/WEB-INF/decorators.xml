@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<decorators defaultdir="/WEB-INF/views">
+    <decorator name="main" page="admin/include/main_decorator.jsp">
+        <pattern>/admin/*</pattern>
+    </decorator>
+    <decorator name="common" page="commons/include/decorator.jsp">
+        <pattern>/*</pattern>
+    </decorator>
+    <excludes>
+    	<pattern>/error/*</pattern>
+    	<!-- <pattern>/member/join_member_page.do</pattern> -->
+    	<pattern>/member/admin_login_page.do</pattern>
+    	<pattern>/member/join_admin_page.do</pattern>
+    </excludes>
+</decorators>

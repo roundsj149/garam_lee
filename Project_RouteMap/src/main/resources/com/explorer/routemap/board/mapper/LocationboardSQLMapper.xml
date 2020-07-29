@@ -1,0 +1,264 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.explorer.routemap.board.mapper.LocationboardSQLMapper">
+
+	<!-- TEST 
+	<select id="test" resultType="map">
+		<![CDATA[
+			SELECT * FROM rm_locationboard t1 ,rm_member t2 , rm_province_category t3
+			WHERE t1.member_no = t2.member_no AND t1.province_category_no = t3.province_category_no			
+		
+		]]>
+	</select>
+	-->
+
+	<!-- 게시물 번호 생성 -->
+	<select id="createLocationboardKey" resultType="int">
+		<![CDATA[
+			SELECT RM_Locationboard_seq.nextval
+			FROM DUAL
+		]]>
+	</select>
+   <!-- 여행지/맛집 글쓰기 -->
+   <insert id="insert">
+      <![CDATA[
+         INSERT INTO RM_Locationboard
+         VALUES(
+               #{locationboard_no},
+               #{member_no},
+               #{province_category_no},
+               #{location_category_no},
+               #{cost_category_no},
+               #{type_category_no},
+               #{time_category_no},
+               #{mood_category_no},
+               #{locationboard_title},
+               #{locationboard_content},
+               0,
+               #{locationboard_cost},
+               #{locationboard_time},
+               #{locationboard_storename },
+               #{locationboard_storeaddress },
+               #{locationboard_coordinate },
+               #{locationboard_storenumber },
+               SYSDATE
+               )
+      ]]>
+   </insert>
+
+	<!-- 여행지/맛집 글읽기 -->
+	<select id="selectByLocationboardNo"
+		resultType="com.explorer.routemap.board.vo.LocationboardVo">
+      <![CDATA[
+      SELECT *
+      FROM RM_Locationboard
+      WHERE locationboard_no = #{locationboard_no} 
+      ]]>
+	</select>
+   <!-- 여행지/맛집 글수정 -->
+   <update id="update">
+      <![CDATA[
+         UPDATE RM_Locationboard
+         SET 
+            province_category_no=#{province_category_no},
+            location_category_no=#{location_category_no},
+            cost_category_no=#{cost_category_no},
+            type_category_no=#{type_category_no},
+            time_category_no=#{time_category_no},
+            mood_category_no=#{mood_category_no}, 
+            locationboard_title=#{locationboard_title}, 
+            locationboard_content=#{locationboard_content},
+            locationboard_cost=#{locationboard_cost}, 
+            locationboard_time=#{locationboard_time},
+            locationboard_storename=#{locationboard_storename}, 
+            locationboard_storeaddress=#{locationboard_storeaddress},
+            locationboard_coordinate=#{locationboard_coordinate},
+            locationboard_storenumber=#{locationboard_storenumber}
+            WHERE locationboard_no=#{locationboard_no}
+      ]]>
+   </update>
+	<!-- 게시글 조회수 -->
+	<update id="updateReadcount">
+      <![CDATA[
+         UPDATE RM_Locationboard
+         SET locationboard_readcount = locationboard_readcount+1
+         WHERE locationboard_no = #{locationboard_no} 
+      ]]>
+	</update>
+
+	<!-- 전체 글 목록 및 페이징 처리 -->
+	<select id="selectAllBoardList"
+		resultType="com.explorer.routemap.board.vo.LocationboardVo">
+	<![CDATA[
+		SELECT * 
+		FROM(
+		    SELECT ROWNUM RNUM, T1.* 
+		    FROM(
+		        SELECT * 
+		        FROM RM_LOCATIONBOARD
+		        ORDER BY LOCATIONBOARD_NO DESC
+		        )T1
+		    )T2
+		WHERE T2.RNUM >= (#{currPage}-1)*12+1 AND T2.RNUM <= #{currPage}*12
+	]]>
+	</select>
+	<!-- 좋아요 수 가장 많은 글 3건 선택 -->
+	<select id="selectMaxLikeLocationboardByNo" resultType="int">
+		<![CDATA[
+		SELECT locationboard_no
+		FROM (SELECT count(locationboard_no) cnt, locationboard_no
+	          FROM RM_LC_Like
+	          GROUP BY locationboard_no
+	          ORDER BY cnt DESC) t1
+		WHERE ROWNUM <= 3
+		]]>
+	</select>	
+	<!-- 게시물 제목 검색 및 페이징 처리 -->
+	<select id="selectByTitle"
+		resultType="com.explorer.routemap.board.vo.LocationboardVo">
+	<![CDATA[
+		SELECT *
+		FROM (
+		    SELECT ROWNUM rn, t2.* 
+		    FROM (
+		            SELECT t1.* 
+		            FROM RM_Locationboard t1 
+		            WHERE locationboard_title LIKE '%'||#{search_word}||'%'
+		            ORDER BY t1.locationboard_no DESC) t2) t3
+			WHERE t3.rn >= (#{currPage}-1)*12+1
+			AND t3.rn <= (#{currPage}-1)*12+12
+	]]>
+	</select>
+
+	<!-- 지역별 게시물 리스트 -->
+	<select id="selectByProvinceCategoryNo"
+		resultType="com.explorer.routemap.board.vo.LocationboardVo">
+		SELECT *
+		FROM (
+		SELECT ROWNUM rn, t2.*
+		FROM (
+		SELECT t1.*
+		FROM RM_Locationboard t1
+		<choose>
+			<when test="province_category_no.length != 0">
+				WHERE province_category_no IN
+				<foreach collection="province_category_no" item="xxx"
+					index="index" separator="," open="(" close=")">
+					#{xxx}
+				</foreach>
+			</when>
+		</choose>
+		ORDER BY t1.locationboard_no DESC) t2) t3
+		<![CDATA[
+						            
+									WHERE t3.rn >= (#{currPage}-1)*12+1
+									AND t3.rn <= (#{currPage}-1)*12+12
+		]]>
+	</select>
+	<!-- //지역 + 검색선택번호 + 검색어 -->
+	<select id="selectBySearch"
+		resultType="com.explorer.routemap.board.vo.LocationboardVo">
+		SELECT *
+		FROM (
+		SELECT ROWNUM rn, t2.*
+		FROM (
+		SELECT t1.*
+		FROM RM_Locationboard t1
+		WHERE t1.location_category_no = #{select_search_no}
+		<choose>
+			<when test="province_category_no.length != 0">
+				and province_category_no IN
+				<foreach collection="province_category_no"
+					item="province_category_no" index="index" separator="," open="("
+					close=")">
+					#{province_category_no}
+				</foreach>
+			</when>
+		</choose>
+		and t1.locationboard_title LIKE '%'||#{search_word}||'%'
+		ORDER BY t1.locationboard_no DESC) t2
+		) t3
+	<![CDATA[
+			        
+			WHERE t3.rn >= (1-1)*12+1
+			AND t3.rn <= (1-1)*12+12
+	]]>
+	</select>
+
+	<!-- 전체 게시글 수 처리 -->
+	<select id="selectByLocationboardAllCount" resultType="int">
+		SELECT
+		COUNT(*)
+		FROM RM_LOCATIONBOARD
+	</select>
+
+	<!-- 검색한 게시글 수 처리 -->
+	<select id="selectByLocationboardSearchCount" resultType="int">
+		SELECT COUNT(*)
+		FROM RM_LOCATIONBOARD
+		WHERE LOCATION_CATEGORY_NO = #{select_search_no}
+		AND
+		PROVINCE_CATEGORY_NO IN
+		<foreach collection="province_category_no"
+			item="province_category_no" index="index" open="(" separator=","
+			close=")">
+			#{province_category_no}
+		</foreach>
+		AND LOCATIONBOARD_TITLE LIKE '%'||#{search_word}||'%'
+	</select>
+
+	<delete id="deleteByLocationboardNo">
+		<![CDATA[
+			DELETE
+			FROM RM_Locationboard
+			WHERE locationboard_no=#{locationboard_no}
+		]]>
+	</delete>
+	<!-- 전ㅊ ㅔ게시물 ajax -->
+	<select id="selectAllWithCondition" parameterType="map" resultType="com.explorer.routemap.board.vo.LocationboardVo">
+		${SELECT_LOCATIONBOARD}
+	</select>
+	<!-- 전ㅊ ㅔ게시물 건수 ajax -->
+		<select id="countAllWithCondition" parameterType="map" resultType="int">
+		${COUNT_LOCATIONBOARD}
+	</select>
+	<!-- 좋아요 순 정렬을 위한 locationboard_no 추출 -->
+	<select id="likeAlign" resultType="int">
+		<![CDATA[
+		SELECT locationboard_no 
+		FROM
+			(SELECT count(locationboard_no) cnt, locationboard_no 
+			 FROM RM_LC_LIKE
+			 GROUP BY locationboard_no 
+			 ORDER BY cnt DESC)
+		]]>
+	</select>
+	<!-- 게시글 번호로 글쓴이 뽑아오기 -->
+	<select id="selectMemberNoByLocationboardNo" resultType="int">
+		<![CDATA[
+			SELECT NVL(max(member_no), 0)
+			FROM RM_Locationboard
+			WHERE locationboard_no=#{locationboard_no}
+		]]>
+	</select>
+	<!--  게시글 댓글 번호로 댓글 작성자 뽑아오기 -->
+	<select id="selectMemberNoByLocationboardReplyNo" resultType="int">
+		<![CDATA[
+			SELECT NVL(max(member_no), 0)
+			FROM RM_LC_Reply
+			WHERE locatinoboard_reply_no=#{locatinoboard_reply_no}
+		]]>
+	</select>
+	<!-- 좋아요 내가 하는건지 확인 
+	<select id="selectLikeMemberNoByLocationboardNo" resultType="int">
+		<![CDATA[
+			SELECT NVL(max(member_no), 0)
+			FROM RM_LC_Like
+			WHERE locationboard_no=#{locationboard_no}
+			AND member_no=#{member_no}
+		]]>
+	</select>-->
+</mapper> 

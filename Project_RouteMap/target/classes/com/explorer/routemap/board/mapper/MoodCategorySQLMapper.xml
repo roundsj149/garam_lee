@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.explorer.routemap.board.mapper.MoodCategorySQLMapper">
+	<!-- 분위기 확인 -->
+	<select id="selectByNo" resultType="com.explorer.routemap.board.vo.MoodCategoryVo">
+	<![CDATA[
+	SELECT *
+	FROM RM_Mood_Category
+	WHERE mood_category_no = #{mood_category_no}
+	]]>
+	</select>
+
+</mapper>

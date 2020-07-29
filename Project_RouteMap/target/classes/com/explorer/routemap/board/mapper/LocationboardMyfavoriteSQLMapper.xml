@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper
+	namespace="com.explorer.routemap.board.mapper.LocationboardMyfavoriteSQLMapper">
+	<!-- 관심 장소 게시글 불러오기 -->
+	<select id="selectByMemberNo"
+		resultType="com.explorer.routemap.board.vo.LocationboardMyfavoriteVo">
+      <![CDATA[
+        SELECT * 
+        FROM RM_LC_Myfavorite
+        WHERE member_no = #{member_no}
+      ]]>
+	</select>
+
+	<select id="selectMyfavoriteAllCheck"
+		resultType="com.explorer.routemap.board.vo.LocationboardMyfavoriteVo">
+		<![CDATA[
+			SELECT * FROM RM_LC_Myfavorite
+			WHERE member_no = #{member_no}
+			AND locationboard_no = #{board_no}
+		]]>
+	</select>
+
+	<insert id="insertMyfavoriteCheck">
+		<![CDATA[
+			INSERT INTO RM_LC_Myfavorite VALUES (
+			RM_LC_Myfavorite_seq.nextval, 
+			#{member_no}, 
+			#{locationboard_no})
+		]]>
+	</insert>
+
+	<delete id="deleteMyfavoriteCheck">
+		<![CDATA[
+			DELETE FROM RM_LC_Myfavorite
+			WHERE 
+			member_no = #{member_no} AND 
+			locationboard_no = #{locationboard_no}
+		]]>
+	</delete>
+
+	<delete id="deleteMyfavorite">
+		<![CDATA[
+			DELETE FROM RM_LC_Myfavorite
+			WHERE
+			locationboard_no = #{locationboard_no}
+		]]>
+	</delete>
+</mapper>

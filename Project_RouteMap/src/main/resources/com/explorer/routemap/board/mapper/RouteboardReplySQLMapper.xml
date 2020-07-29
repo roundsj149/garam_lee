@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.explorer.routemap.board.mapper.RouteboardReplySQLMapper">
+	
+	<!--루트공유 댓글 쓰기 -->
+	<insert id="insert">
+	<![CDATA[
+		INSERT INTO RM_RT_Reply
+		VALUES(RM_RT_Reply_seq.nextval,
+			   #{member_no},
+			   #{routeboard_no},
+			   #{routeboard_reply_content}, SYSDATE)
+	]]>
+	</insert>
+	<!--루트공유 댓글 불러오기 -->
+	<select id="selectByRouteboardNo" resultType="com.explorer.routemap.board.vo.RouteboardReplyVo">
+	<![CDATA[
+		SELECT * 
+		FROM RM_RT_Reply
+		WHERE routeboard_no=#{routeboard_no}
+		ORDER BY routeboard_reply_no
+	]]>
+	</select>
+	<!-- 루트공유 댓글 삭제 -->
+	<delete id="delete">
+	<![CDATA[
+		DELETE FROM RM_RT_Reply
+		WHERE routeboard_reply_no=#{routeboard_reply_no}
+	]]>
+	</delete>
+	
+	<!-- 루트공유 댓글 수정 -->
+	<update id="update">
+	<![CDATA[
+		UPDATE RM_RT_Reply
+		SET routeboard_reply_content=#{routeboard_reply_content}
+		WHERE routeboard_reply_no=#{routeboard_reply_no}
+	]]>
+	</update>
+	<!-- 게시물 삭제 시 댓글 같이 삭제 -->
+		<delete id="deleteAll">
+	<![CDATA[
+		DELETE FROM RM_RT_Reply
+		WHERE routeboard_no=#{routeboard_no}
+	]]>
+	</delete>
+	<!-- 장소 댓글 작성자 -->
+	<select id="selectByReplyNo" resultType="com.explorer.routemap.board.vo.RouteboardReplyVo">
+      <![CDATA[
+         SELECT *
+         FROM RM_RT_Reply
+         WHERE routeboard_reply_no = #{routeboard_reply_no} 
+      ]]>
+	</select>
+</mapper>
