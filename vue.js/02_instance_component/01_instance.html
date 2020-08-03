@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Instance</title>
+</head>
+<body>
+  <div id="app">
+    <!-- 아래의 el이 있어야 이 안에서 뷰의 기능과 속성이 유효해짐 el이 없으면 data 정의해도 사용 x. 무조건 el 지정해주고 인스턴스 붙여줘야 함 -->
+    {{ message }}
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+  <!--el: body태그 안에서 app이라는 아이디를 가진 태그를 찾아서 인스턴스를 붙이겠다 -->
+  <script>
+    var vm = new Vue({
+        data: {
+        message: 'hi'
+      }
+    }).$mount('#app');
+  </script>
+  <!-- 위의 코드는 아래의 코드와 같은 것임. 따로 변수에 객체를 담아서 넘기는 방식 - 가독성 떨어짐
+  var options = {
+    el: '#app',
+    data: {
+      message: 'hi'
+    }
+  }
+  var vm = new Vue(options);
+  -->
+</body>
+</html>

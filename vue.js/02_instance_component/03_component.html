@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Component</title>
+</head>
+<body>
+  <div id="app">
+    <app-header></app-header>
+    <app-content></app-content>
+    <app-footer></app-footer>
+  </div>
+  <div id="app2">
+    <app-header></app-header>
+    <app-content></app-content>
+    <!-- <app-footer></app-footer>: 지역 컴포넌트이므로 인식 안됨 -->
+    <app-footer2></app-footer2>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.5.2/dist/vue.js"></script>
+  <script>
+    // 지역 컴포넌트 vs 전역 컴포넌트: 지역 컴포넌트는 하단에 무엇이 등록되는지 알 수 있음. 전역 컴포넌트는 플러그인이나 라이브러리에 사용
+    // Vue.component('컴포넌트 이름', 컴포넌트 내용);   -> 컴포넌트 등록 코드
+    // 전역 컴포넌트(실제로 전역 컴포넌트를 등록할 일은 거의 없음!)
+    Vue.component('app-header', {
+      template: '<h1>Header</h1>'
+    });
+    Vue.component('app-content',{
+      template: '<div>content</div>'
+    });
+    new Vue({
+      el: '#app',
+      // 지역 컴포넌트 - '키': 값
+      // 여러 개의 컴포넌트를 등록하기 때문에 s 붙음
+      components: {
+        'app-footer': {
+          template: '<footer>footer</footer>'
+        }
+      }
+    });
+
+    new Vue({
+      el: '#app2',
+      components: {
+        'app-footer2': {
+          template: '<footer>footer2</footer>'
+        }
+      }
+    });
+  </script>
+</body>
+</html>
