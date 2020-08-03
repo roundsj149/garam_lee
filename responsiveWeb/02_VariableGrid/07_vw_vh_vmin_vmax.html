@@ -1,0 +1,33 @@
+
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>Document</title>
+<style>
+*{margin:0; padding:0; font-size:100%;}
+
+p:first-child{
+font-size:5vw;
+}
+p:first-child+p{
+font-size:5vh;
+}
+p:first-child+p+p{
+font-size:5vmin;
+}
+p:first-child+p+p+p{
+font-size:5vmax;
+}
+</style>
+</head>
+<body>
+	<!-- vw는 창 크기를 줄이면 글자 크기도 함께 줄어듦 -->
+	<p>vw단위!</p>
+	<p>vh단위!</p>
+	<p>vmin단위!</p>
+	<p>vmax단위!</p>
+	<div style="font-size:64px">px단위!</div>
+</body>
+</html>

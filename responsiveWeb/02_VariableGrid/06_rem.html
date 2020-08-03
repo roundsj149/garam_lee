@@ -1,0 +1,27 @@
+
+<!DOCTYPE HTML>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, user-scalable=no">
+<title>Document</title>
+<style>
+*{margin:0; padding:0; font-size:100%;}
+
+p{
+font-size:5em;
+}
+
+p span{
+/* rem은 부모 폰트 사이즈를 상속받지 않음. 최상위 태그인 html의 폰트 사이즈를 상속 받음 */
+font-size:5rem;
+}
+</style>
+</head>
+<body>
+	<p>
+	em 단위!
+		<span>rem 단위!</span>
+	</p>
+</body>
+</html>
