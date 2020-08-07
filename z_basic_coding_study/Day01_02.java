@@ -7,7 +7,7 @@
 	안녕하세요 */
 package garamCodingTestPractice;
 
-public class day1_02 {
+public class Day01_02 {
 	
 	public static void main(String[] args) {
 		int num = 5;

@@ -4,7 +4,7 @@ package garamCodingTestPractice;
 
 import java.util.Scanner;
 
-public class day1_01 {
+public class Day01_01 {
 
 	public static void main(String[] args) {
 		
