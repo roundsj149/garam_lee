@@ -1,8 +1,8 @@
 {
-  "name": "vue-todo",
+  "name": "vud-todo",
   "description": "A Vue.js project",
   "version": "1.0.0",
-  "author": "garam",
+  "author": "garam2020",
   "license": "MIT",
   "private": true,
   "scripts": {
