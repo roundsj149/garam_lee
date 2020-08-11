@@ -29,11 +29,11 @@ public class Day12_24 {
 		System.out.println();
 		
 		// 2) 선택정렬
-		int[] num2 = {1,7,6,3,2,8,9,4,5};
+		int[] num2 = {1,7,6,3,2,8,9,4,5}; // 길이: 9
 		int temp2;
 		
-		for(int i=0; i<num2.length; i++) {
-			for(int j=i; j<num2.length; j++) {
+		for(int i=0; i<num2.length-1; i++) {
+			for(int j=i+1; j<num2.length; j++) {
 				if(num2[i] > num2[j]) {
 					temp2 = num2[i];
 					num2[i] = num2[j];

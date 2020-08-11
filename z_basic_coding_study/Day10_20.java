@@ -17,31 +17,52 @@ package garamCodingTestPractice;
 public class Day10_20 {
 
 	public static void main(String[] args) {
-		
+		/*
+		 * int cnt = 0; 
+		 * int num = 0; 
+		 * boolean run = true;
+		 * 
+		 * for(int i=1; i<100; i++) { 
+		 * 		num = i;
+		 * 		while(run) { 
+		 * 			if((num%10 !=0) && ((num%10) % 3 == 0)) { 
+		 * 				cnt++; 
+		 * 			} 
+		 * 			num = num / 10; 
+		 * 			if(num == 0) { 
+		 * 				run = false; 
+		 * 			}
+		 *		 }
+		 *		 if(cnt == 1) { 
+		 * 			System.out.println(i+" 박수 한 번");
+		 * 		}
+		 * 		if(cnt == 2) {
+		 * 			System.out.println(i+" 박수 두 번");
+		 * 		}
+		 *		cnt = 0;
+		 * 		run = true;
+		 * }
+		 */
+
 		int cnt = 0;
 		int num = 0;
-		boolean run = true;
-		
-		for(int i=1; i<100; i++) {
+
+		for (int i = 1; i <= 99; i++) {
+
 			num = i;
-			while(run) {
-				if((num%10 !=0) && ((num%10) % 3 == 0)) {
+			while (num > 0) {
+				if (num % 10 != 0 && (num % 10) % 3 == 0) {
 					cnt++;
 				}
-				num = num / 10;
-				if(num == 0) {
-					run = false;
-				}
+				num /= 10;
 			}
-			if(cnt == 1) {
-				System.out.println(i+" 박수 한 번");
-			}
-			if(cnt == 2) {
-				System.out.println(i+" 박수 두 번");
+
+			if (cnt == 1) {
+				System.out.println(i + ": 박수 한 번");
+			} else if (cnt == 2) {
+				System.out.println(i + ": 박수 두 번");
 			}
 			cnt = 0;
-			run = true;
 		}
 	}
-
 }

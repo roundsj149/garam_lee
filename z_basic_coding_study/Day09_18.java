@@ -11,10 +11,10 @@ public class Day09_18 {
 		boolean run = true;
 		
 		while(run) {
-			if(num%2 !=0 || num%3 == 0) {
+			if(num%2 !=0 || (num%3 == 0 && num%2 == 0)) {
 				sum += num;
 			}
-			if(sum >=1000) {
+			if(sum > 1000) {
 				System.out.println(num);
 				System.out.println(sum);
 				run = false;

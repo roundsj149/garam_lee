@@ -4,7 +4,22 @@ package garamCodingTestPractice;
 public class Day11_21 {
 
 	public static void main(String[] args) {
-
+		
+		int cnt = 0;
+		int num = 0;
+		
+		for(int i = 0; i <= 10000; i++) {
+			num = i;
+			while(num > 0) {
+				if(num%10 != 0 && (num%10)%8 == 0) {
+					cnt++;
+				}
+				num /= 10;
+			}
+		}
+		System.out.println(cnt);
+		
+		/*
 		int cnt = 0;
 		int num = 0;
 		
@@ -25,5 +40,6 @@ public class Day11_21 {
 			}
 		}
 		System.out.println(cnt);
+		*/
 	}
 }
