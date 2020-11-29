@@ -48,7 +48,7 @@ public class MailSenderThread {
 			buffer.append("<a href='" + link + "'>");
 			buffer.append("링크를 클릭해주세요.</a>");
 
-			Address fromAddr = new InternetAddress("grlee@dayside.co.kr");
+			Address fromAddr = new InternetAddress("메일 주소");
 			msg.setFrom(fromAddr);
 
 			Address toAddr = new InternetAddress(to);
@@ -67,7 +67,7 @@ public class MailSenderThread {
 		@Override
 		protected PasswordAuthentication getPasswordAuthentication() {
 			//TODO: 메일 비번 안보이게 넣는 방법 알아야 함
-			return new PasswordAuthentication("grlee@dayside.co.kr", "메일 비번");
+			return new PasswordAuthentication("메일 주소", "메일 비번");
 		}
 	}
 
