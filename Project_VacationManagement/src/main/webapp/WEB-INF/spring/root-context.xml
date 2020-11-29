@@ -23,16 +23,6 @@
 	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate">
  		<constructor-arg index="0" ref="sqlSessionFactory" />
 	</bean>
-	
 	<mybatis-spring:scan base-package="com.dayside.vacation.*.mapper" />
 	<context:component-scan base-package="com.dayside.vacation.*.service"></context:component-scan>
-	
-		
-	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="dataSource"/>
-	</bean>
-
-   <!-- Filter 사용
-   <bean id="CommonFilter" class="com.dayside.vacation.common.filter.CommonFilter"/>
-   <bean id="VacationFilter" class="com.dayside.vacation.common.filter.VacationFilter"/> -->  
 </beans>

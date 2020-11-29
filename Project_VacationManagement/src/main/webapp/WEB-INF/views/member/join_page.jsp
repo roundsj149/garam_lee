@@ -9,7 +9,6 @@
 <!-- CSS -->
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/member/login_page.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/font.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/common.css">
 <!-- Font Awesome -->
 <script src="https://kit.fontawesome.com/140e7037bd.js" crossorigin="anonymous"></script>
 <!-- favicon -->
@@ -18,8 +17,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@500&display=swap" rel="stylesheet">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta charset="UTF-8">
-<!-- jQuery -->
-<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 <title>데이사이드 휴가 신청</title>
 </head>
 <body>
@@ -67,8 +64,8 @@
 				<label for="pwCheck">소속팀</label><br>
 			  	<select name="team" id="team">
 			  		<option value="DEFAULT">-------------------------</option>
-			    	<option value="CEO_SUPPORT">대표이사&amp;경영지원</option>
-			    	<option value="DESIGN_QA">디자인&amp;QA</option>
+			    	<option value="CEO&SUPPORT">대표이사&amp;경영지원</option>
+			    	<option value="DESIGN&QA">디자인&amp;QA</option>
 			    	<option value="SOFTWARE_LAB">소프트웨어 연구소</option>
 			    	<option value="SERVICE_DEV">서비스개발</option>
 			    	<option value="NEW_BUSINESS_DEV">신사업개발</option>
@@ -101,13 +98,15 @@
 			<div class="form-content">
 				<div class="info-check alert alert-danger" role="alert"></div>
 			</div>
-			<div class="form-content btns">
+			<div class="form-content" style="text-align:right;">
 			    <input type="button" class="btn btn-warning" id="joinBtn" value="가입하기">
-			    <a class="a-box" href="/member/login"><button type="button" class="btn btn-outline-secondary">취소</button></a>
+			    <a href="/vacation"><button type="button" class="btn btn-outline-secondary">취소</button></a>
 			</div>
 		</form>
 	</div>
 </div>
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.5.1.js" integrity="sha256-QWo7LDvxbWT2tbbQ97B53yJnYU3WhH/C8ycbRAkjPDc=" crossorigin="anonymous"></script>
 <!-- Popper -->
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" 
 	integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>

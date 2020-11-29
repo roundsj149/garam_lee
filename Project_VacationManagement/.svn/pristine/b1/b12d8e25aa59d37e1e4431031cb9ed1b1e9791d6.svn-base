@@ -1,5 +1,0 @@
-package com.dayside.vacation.overtime.mapper;
-
-public interface OvertimeMapper {
-
-}

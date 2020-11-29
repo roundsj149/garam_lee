@@ -1,40 +1,17 @@
 @charset "UTF-8";
-
 .header {
 	display:flex;
-	justify-content: space-between;
-	align-items:center;
 	background-color: #1b1c1d;
 	width: 100%;
 	height: 3rem;
 	margin:0;
-	position:fixed;
-	z-index:100;
 }
 
 a {
 	align-self:center;
-	padding-right:32px;
 }
 
 img {
 	width:4rem;
 	height:auto;
-}
-
-#logoutForm {
-	display:flex;
-	flex-direction:row;
-	color:white;
-	align-items:center;
-	
-}
-
-#pwUpdateBtn {
-	margin-right:0.5rem;
-}
-
-#countVacation {
-	padding-left: 1rem;
-	padding-right: 2rem;
 }

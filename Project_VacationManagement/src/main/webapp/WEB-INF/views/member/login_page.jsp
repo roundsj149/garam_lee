@@ -1,22 +1,14 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%
-response.setHeader("Pragma", "no-cache"); //HTTP 1.0
-response.setHeader("Cache-Control", "no-cache"); //HTTP 1.1
-response.setHeader("Cache-Control", "no-store"); //HTTP 1.1
-response.setDateHeader("Expires", 0L); // Do not cache in proxy server
-%>
 <!DOCTYPE html>
 <html>
 <head>
-<base href="/" /> 
 <!-- 부트스트랩  CSS -->
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
 	integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous">
 <!-- CSS -->
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/member/login_page.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/font.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/resources/css/common/common.css">
 <!-- Font Awesome -->
 <script src="https://kit.fontawesome.com/140e7037bd.js" crossorigin="anonymous"></script>
 <!-- favicon -->
@@ -44,20 +36,20 @@ response.setDateHeader("Expires", 0L); // Do not cache in proxy server
 				<label for="emailId">이메일 아이디</label>
 			    <input type="email" class="form-control" id="emailId" name="emailId" placeholder="이메일 아이디"
 			    	onfocus="this.placeholder=''" onblur="this.placeholder='이메일 아이디'">
-			    <div class="id-blank">아이디를 입력해주세요.</div>
+			    <div class="id-blank">아이디를 입력해 주세요</div>
 			</div>
 			<div class="form-content">
 			    <label for="pw">비밀번호</label>
 			    <input type="password" class="form-control" id="pw" name="pw" placeholder="비밀번호"
 			    	onfocus="this.placeholder=''" onblur="this.placeholder='비밀번호'">
-			    <div class="pw-blank">비밀번호를 입력해주세요.</div>
+			    <div class="pw-blank">비밀번호를 입력해 주세요</div>
 			</div>
 			<div class="form-content">
 			    <div class="info-check alert alert-danger" role="alert"></div>
 			</div>
-			<div class="form-content btns">
+			<div class="form-content" style="text-align:right;">
 			    <input type="button" id="loginBtn" class="btn btn-warning" value="로그인">
-			    <a class="a-box" href="/member/join">
+			    <a href="join">
 			    	<button type="button" class="btn btn-outline-secondary">회원가입</button>
 			    </a>
 			</div>

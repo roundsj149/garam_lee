@@ -9,60 +9,33 @@ $(function() {
 	var leaderYn = $("input:radio[name=leaderYn]");
 	var adminYn = $("input:radio[name=adminYn]");
 	var joinBtn = $("#joinBtn");
-	var inputElement= document.querySelectorAll(".form-control");
-	var resultArr = ["F00004", "F00005", "F00006", "F00007", "F00008"];
-	var messageArr = ["사번을 확인해주세요.", "아이디를 확인해주세요.", "이름을 확인해주세요.", "비밀번호를 확인해주세요.", "비밀번호 확인을 해주세요."];
 	
-	// 유효성 검사 및 중복 확인에 따른 안내 메시지
-	function displayBlock(selectedElement, message) {
-		selectedElement.next().text(message).css("display","block");
-	}
-	
-	// 안내 메시지 없애기
-	function displayNone(selectedElement) {
-		selectedElement.next().css("display","none");
-	}
-	
-	// class invalid
-	function classInvalid(selectedElement) {
-		selectedElement.attr("class","form-control invalid");
-	}
-	
-	// class valid
-	function classValid(selectedElement) {
-		selectedElement.attr("class","form-control valid");
-	}
-
 	// 사번 유효성 검사 및 중복 확인
 	var employeeNoRegExp = /^[0-9]{6}$/;
 	
-	employeeNo.on("blur", function() {
+	employeeNo.on("keyup", function() {
 		$.ajax({
-		    	url: "/member/checkEmployeeNo_process",
+		    	url: "/vacation/checkEmployeeNo_process",
 		    	type:"post",
-				contentType: "application/json",
-		    	data: JSON.stringify({"employeeNo": employeeNo.val()}),
-		    	success:function(data){
-		    		if(data.baseResult.returnCode == "S00005") {
+		    	data: {"employeeNo": employeeNo.val()},
+		    	success:function(result){
+		    		if(result == "AVAILABLE") {
 		    			if (employeeNo.val() == "") {
-		    				classInvalid(employeeNo);
-							displayNone(employeeNo);
+		    				employeeNo.attr("class","form-control invalid");
+							$(".no-check").css("display","none");
 						} else if (employeeNo.val().match(employeeNoRegExp) != null) {
-							classValid(employeeNo);
-							displayBlock(employeeNo, data.baseResult.returnDesc);
+							employeeNo.attr("class","form-control valid");
+							$(".no-check").text("사용 가능한 사번입니다.").css("display","block");
 					 	} else {
-					 		classInvalid(employeeNo);
-						  	displayBlock(employeeNo, "사번은 6자리 숫자로 입력하셔야 합니다.");
+					 		employeeNo.attr("class","form-control invalid");
+						  	$(".no-check").text("사번은 6자리 숫자로 입력하셔야 합니다.").css("display","block");
 						  	return;
 					 	}
-		    		} else if(data.baseResult.returnCode == "F00012") {
-		    			classInvalid(employeeNo);
-		    			displayBlock(employeeNo, data.baseResult.returnDesc);
+		    		} else {
+		    			employeeNo.attr("class","form-control invalid");
+		    			$(".no-check").text("중복된 사번입니다.").css("display","block");
 						return;
-		    		} else if(data.baseResult.returnCode == "F11111") {
-						console.log("에러");
-						location.href = "/main/errorPage";
-					}
+		    		}
 		    	},
 		    	error : function(xhr, status) {
                 	document.write(xhr + " : " + status);
@@ -72,29 +45,29 @@ $(function() {
 	
 	// 아이디 유효성 검사 및 중복 확인
 	var idRegExp = /^[a-zA-Z0-9-_\.]{1,20}@dayside.co.kr$/;
-	emailId.on("blur", function() {
+
+	emailId.on("keyup", function() {
 	
 		$.ajax({
-			url: "/member/checkEmailId_process",
+			url: "/vacation/checkEmailId_process",
 		    type:"post",
-			contentType: "application/json",
-		    data: JSON.stringify({"emailId": emailId.val()}),
-		    success:function(data){
-		    	if(data.baseResult.returnCode == "S00006") {
+		    data: {"emailId": emailId.val()},
+		    success:function(result){
+		    	if(result == "AVAILABLE") {
 		    		if (emailId.val() == "") {
-		    			classInvalid(emailId);
-						displayNone(emailId);
+		    			emailId.attr("class","form-control invalid");
+						$(".id-check").css("display","none");
 					} else if (emailId.val().match(idRegExp) != null) {
-						classValid(emailId);
-						displayBlock(emailId, data.baseResult.returnDesc);
+						emailId.attr("class","form-control valid");
+						$(".id-check").text("사용 가능한 아이디 입니다.").css("display","block");
 				 	} else {
-				 		classInvalid(emailId);
-					  	displayBlock(emailId, "아이디는 데이사이드 이메일 주소를 입력하셔야 합니다.");
+				 		emailId.attr("class","form-control invalid");
+					  	$(".id-check").text("아이디는 데이사이드 이메일 주소를 입력하셔야 합니다.").css("display","block");
 					  	return;
 				 	}
-	    		} else if(data.baseResult.returnCode == "F00013") {
-	    			classInvalid(emailId);
-	    			displayBlock(emailId, data.baseResult.returnDesc);
+	    		} else {
+	    			emailId.attr("class","form-control invalid");
+	    			$(".id-check").text("중복된 아이디입니다.").css("display","block");
 					return;
 	    		}
 	    	},
@@ -109,14 +82,15 @@ $(function() {
 	
 	fullname.on("keyup", function() {
 		if (fullname.val() == "") {
-			classInvalid(fullname);
-			displayNone(fullname);
+			fullname.attr("class","form-control invalid");
+			$(".fullname-check").css("display","none");
 		} else if (fullname.val().match(fullnameRegExp) != null) {
-			classValid(fullname);
-			displayNone(fullname);
-		} else {
-			classInvalid(fullname);
-			displayBlock(fullname, "이름은 2~5자리 한글로 입력하셔야 합니다.");
+			fullname.attr("class","form-control valid");
+			$(".fullname-check").css("display","none");
+		}
+		else {
+			fullname.attr("class","form-control invalid");
+			$(".fullname-check").text("이름은 2~5자리 한글로 입력하셔야 합니다.").css("display","block");
 			return;
 		}
 	});
@@ -127,16 +101,17 @@ $(function() {
 		pwCheck.keyup();
 		
 		if(pw.val() == "") {
-			classInvalid(pw);
-			displayNone(pw);
+			pw.attr("class","form-control invalid");
+			$(".pw-check").css("display","none");	
 		} else if(pw.val().length < 8) {
-			classInvalid(pw);
-			displayBlock(pw, "비밀번호는 8자리 이상으로 입력하셔야 합니다.");	
+			pw.attr("class","form-control invalid");
+			$(".pw-check").text("비밀번호는 8자리 이상으로 입력하셔야 합니다.").css("display","block");	
 			return;
 		} else {
-			classValid(pw);
-			displayNone(pw);
+			pw.attr("class","form-control valid");
+			$(".pw-check").css("display","none");		
 		}
+		
 		
 	});
 	
@@ -144,25 +119,29 @@ $(function() {
 	pwCheck.on("keyup", function() {
 		
 		if(pwCheck.val() == "") {
-			classInvalid(pwCheck);
-			displayNone(pwCheck);
+			pwCheck.attr("class","form-control invalid");
+			$(".pw-double-check").css("display","none");
 		} else if(pw.val() != pwCheck.val()) {
-			classInvalid(pwCheck);
-			displayBlock(pwCheck, "입력하신 비밀번호와 다릅니다.");
+			pwCheck.attr("class","form-control invalid");
+			$(".pw-double-check").text("입력하신 비밀번호와 다릅니다.").css("display","block");
 			return;
 		} else {
-			classValid(pwCheck);
-			displayBlock(pwCheck, "비밀번호가 일치합니다.");
+			pwCheck.attr("class","form-control valid");
+			$(".pw-double-check").text("비밀번호가 일치합니다.").css("display","block");
 		}
 	});
 	
 	// 소속팀 선택 확인
 	team.on("change", function() {
-		if(team.find(":selected").val() != "DEFAULT") {
-			displayNone(team);
+		
+		var selectedTeam = team.find(":selected").val();
+		
+		if(selectedTeam != "DEFAULT") {
+			$(".team-check").css("display","none");
 		}
+		
 	});
-
+	
 	// 팀장 여부 선택 확인
 	leaderYn.on("click", function() {
 		$(".leader-check").css("display","none");
@@ -174,21 +153,31 @@ $(function() {
 	});
 	
 	// 가입하기 버튼 눌렀을 때
-	joinBtn.on("click", joinProcess);
-	
-	function joinProcess() {
+	joinBtn.on("click",function() {
 		
-		// 공란 또는 유효성 검사 실패 시 안내메시지
-		for(var i=0; i<inputElement.length; i++) {
-			if($(inputElement[i]).val() == "" || $(inputElement[i]).attr("class") == "form-control invalid") {
-			displayBlock($(inputElement[i]), messageArr[i]);
+		if(employeeNo.attr("class") == "form-control invalid" || employeeNo.val()=="") {
+			$(".no-check").text("사번을 확인해주세요").css("display","block");
 			return;
-			}
 		}
-		
+		if(emailId.attr("class") == "form-control invalid" || emailId.val()=="") {
+			$(".id-check").text("아이디를 확인해주세요").css("display","block");
+			return;
+		}
+		if(fullname.attr("class") == "form-control invalid" || fullname.val()=="") {
+			$(".fullname-check").text("이름을 확인해주세요").css("display","block");
+			return;
+		}
+		if(pw.attr("class") == "form-control invalid" || pw.val()=="") {
+			$(".pw-check").text("비밀번호를 확인해주세요").css("display","block");
+			return;
+		}
+		if(pwCheck.attr("class") == "form-control invalid" || pwCheck.val()=="") {
+			$(".pw-double-check").text("비밀번호 확인을 해주세요").css("display","block");
+			return;
+		}
 		if(team.val() == "DEFAULT") {
-			displayBlock(team, "소속팀을 선택해주세요.")
-		return;
+			$(".team-check").text("소속팀을 선택해주세요").css("display","block");
+			return;
 		}
 		if(!leaderYn.is(":checked")) {
 			$(".leader-check").text("팀장 여부를 선택해주세요").css("display","block");
@@ -199,46 +188,66 @@ $(function() {
 			return;
 		}
 		
-		var formData = {"employeeNo": employeeNo.val(),
-						"emailId": emailId.val(),
-						"fullname": fullname.val(),
-						"pw": pw.val(),
-						"pwCheck": pwCheck.val(),
-						"team": team.find(":selected").val(),
-						"leaderYn": $("input:radio[name=leaderYn]:checked").val(),
-						"adminYn": $("input:radio[name=adminYn]:checked").val()
-						};
+		var formData = $("#frm").serialize();
 		$.ajax({
-            url : "/member/join_process",
+            url : "/vacation/join_process",
             type : 'POST', 
-            data : JSON.stringify(formData),
-            contentType: "application/json",
+            data : formData,
             success : function(data) {
-            	for(var i=0; i<resultArr.length; i++) {
-            		if(data.baseResult.returnCode == resultArr[i]) {
-            			displayBlock($(inputElement[i]), data.baseResult.returnDesc);
-            			return;
-            		}
+            	if(data == "SUCCESS") {
+            		location.href = "/vacation";
+            	} else if(data == "NO_FAIL") {
+            		$(".no-check").text("사번을 확인해주세요").css("display","block");
+            	} else if(data == "ID_FAIL") {
+            		$(".id-check").text("아이디를 확인해주세요").css("display","block");
+            	} else if(data == "FULLNAME_FAIL") {
+            		$(".fullname-check").text("이름을 확인해주세요").css("display","block");
+            	} else if(data == "PW_FAIL") {
+            		$(".pw-check").text("비밀번호를 확인해주세요").css("display","block");
+            	} else if(data == "PWCHECK_FAIL") {
+            		$(".pw-double-check").text("비밀번호 확인을 해주세요").css("display","block");
+            	} else if(data == "TEAM_FAIL") {
+            		$(".team-check").text("소속팀을 선택해주세요").css("display","block");
+            	} else if(data == "LEADERYN_FAIL") {
+            		$(".leader-check").text("팀장 여부를 선택해주세요").css("display","block");
+            	} else if(data == "ADMINYN_FAIL") {
+            		$(".admin-check").text("관리자 여부를 선택해주세요").css("display","block");
+            	} else {
+            		location.href = "/vacation/join";
             	}
-            	if(data.baseResult.returnCode == "F00009") {
-            		displayBlock(team, data.returnDesc);
-					return;
-            	} else if(data.baseResult.returnCode == "F00010") {
-            		$(".leader-check").text(data.returnDesc).css("display","block");
-					return;
-            	} else if(data.baseResult.returnCode == "F00011") {
-            		$(".admin-check").text(data.baseResult.returnDesc).css("display","block");
-					return;
-            	} else if(data.baseResult.returnCode == "F11111") {
-					console.log("익셉션 핸들러를 통한 에러!");
-				} else {
-            		location.href = "/member/login";
-            	}
-            	
             },
 			error : function(xhr, status) {
                 document.write(xhr + " : " + status);
             }
-		});		
-	}
+		});
+	});
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -34,29 +34,25 @@ $(function() {
 			}
 		}
 
-		var formData = {"emailId": emailId.val(),
-						"pw": pw.val()
-						};
+		var formData = $("#frm").serialize();
+		
 		$.ajax({
-            url : "/member/login_process",
-            type : "post", 
-			contentType: "application/json",
-            data : JSON.stringify(formData),
+            url : "/vacation/login_process",
+            type : 'POST', 
+            data : formData, 
             success : function(data) {
-				console.log(data);
-            	if(data.baseResult.returnCode == "S00001") {
-					console.log("로그인 성공");
+                if(data == "JOIN_APPROVAL") {
                 	location.href = "/vacation/list";
-                } else if(data.baseResult.returnCode == "F11111") {
-					console.log("에러");
-					location.href = "/main/errorPage";
-				} else {
-					console.log("로그인 실패 "+data.baseResult.returnCode+"/"+data.baseResult.returnDesc);
-                	joinStatus(data.baseResult.returnDesc);
-				}
+                } else if(data == "JOIN_REQUEST") {
+                	joinStatus("가입 요청중입니다. 관리자에게 문의해주세요.");
+                } else if(data == "JOIN_REJECT") {
+                	joinStatus("가입이 거절되었습니다. 관리자에게 문의해주세요.");
+                } else {
+                	joinStatus("아이디 또는 비밀번호를 확인해주세요.");
+                }
             },
 			error : function(xhr, status) {
-               	console.log(xhr + " : " + status);
+                document.write(xhr + " : " + status);
             }
 		});
 	}

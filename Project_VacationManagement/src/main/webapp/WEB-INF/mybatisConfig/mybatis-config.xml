@@ -6,7 +6,6 @@
 		<setting name="mapUnderscoreToCamelCase" value="true" />
 	</settings>
 	<typeAliases>
-		<!--  <typeAlias type="com.dayside.vacation.member.model.Member" alias="Member" />-->
-		<package name="com.dayside.vacation" />
+		<typeAlias type="com.dayside.vacation.member.model.Member" alias="Member" />
 	</typeAliases>
 </configuration>

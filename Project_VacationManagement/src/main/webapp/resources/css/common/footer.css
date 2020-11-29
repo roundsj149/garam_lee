@@ -1,9 +1,8 @@
 @charset "UTF-8";
-
-div {
-	padding:1rem;
+body {
+	margin:0;
+	padding:0;
 }
-
 .footer{
     left: 0;
     bottom: 0;
@@ -15,8 +14,9 @@ div {
 	color:#CBCBCB;
 	font-size:0.8rem;
 	width: 100%;
-	min-height: 14.8vh;
+	height: 13vh;
 	margin:0;
+	
 }
 
 .footer-content {
@@ -27,9 +27,15 @@ div {
 	margin:0;
 }
 
+div {
+	padding:1rem;
+}
+
 .footer-margin {
+	
 	margin-right:2rem;
 }
 .footer-margin:nth-child(1) {
+	
 	margin-left:2rem;
 }
