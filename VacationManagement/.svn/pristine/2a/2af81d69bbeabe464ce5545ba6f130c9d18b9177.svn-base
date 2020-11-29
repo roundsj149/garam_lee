@@ -1,0 +1,10 @@
+package com.dayside.vacation.main.model;
+
+import lombok.Data;
+
+@Data
+public class Board {
+	private String searchWord;
+	private String selectYear;
+	private int currPage;
+}

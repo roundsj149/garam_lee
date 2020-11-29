@@ -1,0 +1,21 @@
+package com.dayside.vacation.common.util;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletResponseWrapper;
+
+public class ResWrapper extends HttpServletResponseWrapper {
+
+	public ResWrapper(HttpServletResponse response) {
+		super(response);
+	}
+
+	
+	public String test(String text){
+
+        String newValue = text.toLowerCase();
+
+        return newValue;
+
+    }
+	
+}

@@ -1,0 +1,124 @@
+package com.dayside.vacation.vacation.service;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import com.dayside.vacation.main.mapper.MainMapper;
+import com.dayside.vacation.member.mapper.MemberMapper;
+import com.dayside.vacation.util.ApplyNoGeneration;
+import com.dayside.vacation.vacation.mapper.VacationMapper;
+import com.dayside.vacation.vacation.model.Vacation;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+@Service
+public class VacationService {
+
+	@Autowired
+	VacationMapper vacationMapper;
+	@Autowired
+	MainMapper mainMapper;
+	@Autowired
+	MemberMapper memberMapper;
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(VacationService.class);
+	
+	// 휴가 신청 목록
+	public List<Map<String, Object>> getVacationInfo(String employeeNo) {
+
+		List<Map<String, Object>> list = vacationMapper.selectAllVacationInfo(employeeNo);
+		
+		return list;
+	}
+
+	// 휴가 신청
+	public void requestVacation(Vacation vacation) {
+
+		// 휴가 신청 번호 생성
+		int seq = vacationMapper.getVacationApplySeq();
+		// 현재 시간 날짜 포맷 설정
+		DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
+		String currentTime = df.format(new Date(System.currentTimeMillis()));
+		// 시퀀스가 001 002 003...의 3자리 숫자가 되도록 왼쪽에 0을 붙여주고 현재시간-sequence로 applyNo 만듦
+		// ex. 20200930150635-002
+		String applyNo = currentTime + "-" + StringUtils.leftPad(String.valueOf(seq), 3, "0");
+		ApplyNoGeneration applyNoGeneration = new ApplyNoGeneration();
+		// ex. 20200930150635-0025
+		String vacationApplyNo = applyNoGeneration.genApplyNo(applyNo);
+		vacation.setVacationApplyNo(vacationApplyNo);
+
+		vacationMapper.insertVacationInfo(vacation);
+
+	}
+
+	// 휴가 취소
+	public void cancelVacation(String vacationApplyNo) {
+
+		vacationMapper.deleteVacationInfo(vacationApplyNo);
+	}
+
+	// 휴가 수정 선택
+	public Map<String, Object> getOneVacationInfo(String vacationApplyNo) {
+
+		return vacationMapper.selectOneVacationInfo(vacationApplyNo);
+
+	}
+
+	// 휴가 승인 수
+	public float getVacationCount(String employeeNo) {
+
+		return vacationMapper.countVacation(employeeNo);
+	}
+
+	// 휴가 상태
+	public String getVacationStatus(String applyNo) {
+
+		return vacationMapper.selectVacationStatus(applyNo);
+	}
+
+	// 휴가 수정
+	public void updateVacation(Vacation vacation) {
+
+		vacationMapper.updateVacationInfo(vacation);
+
+	}
+	/* 휴가 검색
+	public List<Map<String, Object>> getMemberVacation(String searchWord) {
+		
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+
+		String[] employeeNos = memberMapper.selectEmployeeNoByFullname(searchWord);
+		for(String employeeNo : employeeNos) {
+			List<Vacation> vacationList = vacationMapper.selectAllVacationInfo(employeeNo);
+			
+			for (Vacation vacation : vacationList) {
+
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("vacation", vacation);
+				String fullname = (String)memberMapper.selectNoName(vacation.getEmployeeNo()).get("fullname");
+				map.put("fullname", fullname);
+				map.put("employeeNo", employeeNo);
+				String koreanCodeName = mainMapper.selectKoreanCodeName(vacation.getStartType());
+				map.put("startType", koreanCodeName);
+				koreanCodeName = mainMapper.selectKoreanCodeName(vacation.getEndType());
+				map.put("endType", koreanCodeName);
+				koreanCodeName = mainMapper.selectKoreanCodeName(vacation.getVacationStatus());
+				map.put("status", koreanCodeName);
+
+				list.add(map);
+			}
+			
+		}
+
+		return list;
+		
+	}*/
+}

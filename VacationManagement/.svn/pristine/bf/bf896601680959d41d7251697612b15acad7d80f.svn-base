@@ -1,0 +1,33 @@
+package com.dayside.vacation.member.mapper;
+
+import com.dayside.vacation.member.model.Member;
+
+public interface MemberMapper {
+	
+	// 전체 회원 조회
+	public Member selectAllMember();
+	// 회원가입
+	public void insertMemberInfo(Member member);
+	// 아이디 확인 및 salt값 가져와서 비밀번호 일치 여부 확인
+	public Member selectId(String emailId);
+	//public Member selectOneMember(@Param("emailId")String emailId, @Param("pw")String pw);
+	// 사번 중복 확인
+	public String selectEmployeeNo(String employeeNo);
+	// 아이디 중복 확인
+	public String selectEmailId(String emailId);
+	// 소속팀명 조회
+	public String[] selectAllTeam();
+
+
+	/**
+	 * <pre>
+	 * applyNoTest
+	 * </pre>
+	 * * 임시 테스트 휴가접수 번호 연번 테스트 
+	 * 1분단위로 연번을 생성, 연번 중복 확인 ,  사용자 아이디 고정..
+	 */
+	public void applyNoTest();
+	public void applyNoTest1();
+	public void applyNoTest2(String vacationApplyNo);
+	public int getVacationApplyNo();
+}

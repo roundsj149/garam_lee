@@ -1,0 +1,15 @@
+package com.dayside.vacation.overtime.model;
+
+import lombok.Data;
+
+@Data
+public class OvertimeRequest {
+	private String startDt;
+	private int startHour;
+	private int startMinute;
+	private String endDt;
+	private int endHour;
+	private int endMinute;
+	private String overtimeType;
+	private String overtimeContent;
+}

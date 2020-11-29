@@ -1,0 +1,250 @@
+$(function() {
+		
+	// 휴가 신청 목록 onload
+	searchVacation();
+	
+	// 검색 버튼 클릭
+	$(document).on("click", "#searchBtn", searchVacation);
+	
+	// 엔터키 눌렀을 때 동작
+	$(document).on("keypress", "#searchForm", enterCheck);
+
+	// 엔터키 눌렀을 때 호출할 함수
+	function enterCheck() {
+		if(event.keyCode == 13) {
+			// 검색 함수 호출
+			searchVacation();
+		}
+	}
+	
+	// 검색 버튼 클릭 시 호출할 함수
+	function searchVacation() {
+		
+		var searchWord = $("#searchForm").val();
+		var str="";
+		var count = 0;
+		
+		$.ajax({
+			url : "/vacation/search_vacation",
+			type : 'POST', 
+			data : JSON.stringify({"searchWord":searchWord}),
+			contentType : "application/json",
+			dataType:"json",
+			success : function(data) {
+				
+				for(result of data) {
+					var applyNo = result.vacationApplyNo;
+					var startDate = getFormatDate(result.startDt);
+					var endDate = getFormatDate(result.endDt);
+					var sDate = getFormatDate(result.startDt + (1000*60*60*24));
+					var eDate = getFormatDate(result.endDt - (1000*60*60*24));
+					str += "<tr id="+applyNo+" class='vacation-list' data-target='#vacationModal' data-toggle='modal'><td>"+getFormatDate(result.applyDt)+"</td>";
+					str += "<td>"+startDate+"</td>";
+					str += "<td>"+endDate+"</td>";
+					// 시작일 = 종료일
+					if(result.startDt == result.endDt) {
+						str += "<td>"+startDate+" / "+result.startType+"</td>";
+					// 종료일 - 시작일 = 1
+					} else if((result.endDt - result.startDt) / (1000*60*60*24) == 1) {
+						// 시작일: 연차
+						if(result.startType == "ALLDAY") {
+							// 종료일: 연차
+							if(result.endType == "ALLDAY") {
+								str += "<td>"+startDate+" ~ "+endDate+" / 연차</td>";
+							// 종료일: 오전
+							} else {
+								str += "<td>"+startDate+" / 연차<br> "+endDate+" / 오전 반차</td>";
+							}
+						// 시작일: 오후
+						} else {
+							// 종료일: 연차
+							if(result.endType == "ALLDAY") {
+								str += "<td>"+startDate+" / 오후 반차<br> "+endDate+" / 연차</td>";
+							// 종료일: 오전
+							} else {
+								str += "<td>"+startDate+" / 오후 반차<br> "+endDate+" / 오전 반차</td>";
+							}
+						}
+						
+					} else if((result.endDt - result.startDt) / (1000*60*60*24) > 1) {
+						// 시작일: 연차
+						if(result.startType == "ALLDAY") {
+							// 종료일: 연차
+							if(result.endType == "ALLDAY") {
+								str += "<td>"+startDate+" ~ "+endDate+" / 연차</td>";
+							// 종료일: 오전
+							} else {
+								str += "<td>"+startDate+" ~ "+eDate+" / 연차<br> "+endDate+" / 오전 반차</td>";
+							}
+						// 시작일: 오후
+						} else {
+							// 종료일: 연차
+							if(result.endType == "ALLDAY") {
+								str += "<td>"+startDate+" / 오후 반차<br> "+sDate+" ~ "+endDate+" / 연차</td>";
+							// 종료일: 오전
+							} else {
+								str += "<td>"+startDate+" / 오후 반차<br>";
+								
+								if(result.startDt + (1000*60*60*24) == result.startDt - (1000*60*60*24)) {
+									str += sDate;
+								} else {
+									str += sDate+" ~ "+eDate;
+								}
+								
+								str += "/ 연차<br> "+endDate+" / 오전 반차</td>";
+							}
+						}
+					}
+					str += "<td>"+result.countDays.toFixed(1)+"</td>";
+					str += "<td>"+result.fullname+"</td>";
+					str += "<td>"+result.koreanCodeName+"</td></tr>";
+					if(result.vacationStatus == "VACATION_APPROVAL") {
+						count += result.countDays;
+					}
+				}  
+				$("tbody").html(str);
+				if(searchWord != null && searchWord != "") {
+					$("#countAll").text(count);
+					$("#cnt").css("visibility", "visible");
+				}
+				
+		    },
+			error : function(xhr, status) {
+				location.href="/vacation/list";
+		    	
+		    }
+		});	
+	
+	}	
+
+	// 세션 확인 후 관리자이면 검색 html 추가
+	$.ajax({
+		url : "/member/leaderYN",
+		type : 'POST', 
+		success : function(data) {
+			if(data == "Y") {
+				var searchBox = $('<div id="searchBox"></div>');
+				var searchContent = $('<label>이름 </label><input type="text" id="searchForm" class="form-control"><input type="button" id="searchBtn" class="btn btn-outline-warning" value="검색">');
+				$("#content").prepend(searchBox.append(searchContent));
+			}
+		},
+		error : function(xhr, status) {
+			document.write(xhr + " : " + status);
+		}
+	});	
+
+	// 휴가 승인 일수 계산
+	$.ajax({
+		url : "/vacation/count_vacation",
+		type : 'POST', 
+		dataType:"json",
+		success : function(data) {
+			$("#countVacation").text(data);
+			
+		},
+		error : function(xhr, status) {
+			document.write(xhr + " : " + status);
+		}
+	});	
+	
+	// 휴가 선택
+	$(document).on("click", ".vacation-list", function() {
+		
+		var applyNo = $(this).attr("id");
+		
+		var form = $('<form id="frm"></form>');
+		var modalFooter = $(".modal-footer");
+		modalFooter.html("");
+		var closeBtn = $('<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>');
+		// 휴가 번호로 휴가 상태 가져오기
+		$.ajax({
+			url : "/vacation/vacation_status",
+			type : 'POST', 
+			data : {"applyNo":applyNo},
+			dataType:"json",
+			success : function(data) {
+		    
+				if(data == 'VACATION_APPROVAL') {
+					var url = "/vacation/update_page";
+				    form.attr('action', url);
+				    form.attr('method', 'post');
+				    form.appendTo('body');
+				    
+				  	var updateBtn = $('<input id="updateBtn" type="button" class="btn btn-warning" value="휴가 수정">');
+					var cancelBtn = $('<button id="cancelBtn" type="button" class="btn btn-outline-warning">휴가 취소</button>');
+					var hiddenDiv = $('<input type="hidden" name="applyNo" value="'+applyNo+'">');
+				    form.append(updateBtn);
+				    form.append(hiddenDiv);
+					
+					modalFooter.append(updateBtn);
+					modalFooter.append(cancelBtn);
+				} 
+				modalFooter.append(closeBtn);
+		            	
+		    },
+			error : function(xhr, status) {
+				console.log("에러");
+				location.href="/vacation/list";
+		    	
+		    }
+		});	
+		
+		// 휴가 취소 버튼 선택
+		$(document).on("click", "#cancelBtn", cancelVacation);
+		
+		// 휴가 취소 버튼 선택 시 호출할 함수
+		function cancelVacation() {
+			if(confirm("신청한 휴가를 취소하시겠습니까?")){
+				$.ajax({
+		            url : "/vacation/cancel_process",
+		            type : 'POST', 
+		            data : {"applyNo":applyNo},
+		            dataType:"json",
+		            success : function(data) {
+		            	location.href = "/vacation/list";
+		            	//if(data.returnCode == "VACATION_APPROVAL") {
+		                	
+		                //} else {
+		                //	console.log(data.returnCode);
+		                //}
+		            },
+					error : function(xhr, status) {
+		                document.write(xhr + " : " + status);
+		            }
+				});	
+		
+		        return true;
+
+		    } else {
+		
+		        return false;
+		    }
+		}
+		
+		// 휴가 수정 버튼 클릭
+		$(document).on("click", "#updateBtn", updateVacation);
+		
+		// 휴가 수정 버튼 클릭 시 호출할 함수
+		function updateVacation() {
+			
+			form.submit();
+			
+		}
+		
+	});
+	
+	// date format 설정
+	function getFormatDate(dateValue) {
+		var date = new Date(dateValue);
+		var year = date.getFullYear();              // yyyy
+		var month = (1 + date.getMonth());          // MM
+		month = month >= 10 ? month : '0' + month;  // 1~9월 두 자리로
+		var day = date.getDate();                   // dd
+		day = day >= 10 ? day : '0' + day;          // 1~9일 두 자리로
+		return  year + "-" + month + "-" + day;       //'-' 추가하여 yyyy-MM-dd 포맷으로
+	}
+	
+	
+	
+});	
+

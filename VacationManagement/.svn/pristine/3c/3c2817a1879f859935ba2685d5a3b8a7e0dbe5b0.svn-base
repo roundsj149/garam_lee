@@ -1,0 +1,47 @@
+@charset "UTF-8";
+
+.login-box {
+	min-width:450px;
+ 	max-width:30vw;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items:center;
+	align-self: center;
+}
+
+.form-content {
+	margin: 0.1rem;
+	margin-bottom: 0.7rem;
+	padding: 0.1rem;
+}
+
+.form-grid {
+	display:grid;
+	grid-template-columns:1fr 1fr;
+}
+
+.btns {
+	text-align:right;
+}
+
+.id-blank, .pw-blank, .no-check, .id-check, .fullname-check, .pw-check, .pw-double-check, .team-check, .leader-check, .admin-check  {
+	padding:0.3rem;
+	color:red;
+	font-size:0.8rem;
+	display:none;
+}
+
+.info-check {
+	text-align:center;
+	display:none;
+}
+
+.invalid+div {
+	color:red;
+}
+
+.valid+div {
+	color:blue;	
+}
+

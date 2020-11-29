@@ -1,0 +1,11 @@
+package com.dayside.vacation.main.mapper;
+
+import java.util.List;
+
+import com.dayside.vacation.main.model.Code;
+
+public interface MainMapper {
+
+	public String selectKoreanCodeName(String codeId);
+	
+}

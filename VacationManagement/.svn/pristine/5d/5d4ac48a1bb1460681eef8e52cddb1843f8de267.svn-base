@@ -1,0 +1,28 @@
+@charset "UTF-8";
+html {
+    position: relative;
+    min-height: 100%;
+    margin: 0;
+    background: #1b1c1d;
+}
+
+body {
+    min-height: 100%;
+}
+
+h3 {
+	margin:0;
+}
+
+.container {
+	min-height: 80vh;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items:center;
+}
+
+.form-content {
+	margin: 0.1rem;
+	padding: 0.1rem;
+}

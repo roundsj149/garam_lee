@@ -1,0 +1,8 @@
+package com.dayside.vacation.overtime.service;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class OvertimeService {
+
+}

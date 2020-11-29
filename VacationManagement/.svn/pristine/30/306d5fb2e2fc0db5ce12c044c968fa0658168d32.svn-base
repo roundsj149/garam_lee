@@ -1,0 +1,208 @@
+package com.dayside.vacation.member.service;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.dayside.vacation.common.util.HashGeneration;
+import com.dayside.vacation.common.util.SaltGeneration;
+import com.dayside.vacation.member.mapper.MemberMapper;
+import com.dayside.vacation.member.model.Member;
+
+@Service
+public class MemberService {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(MemberService.class);
+
+	@Autowired
+	MemberMapper memberMapper;
+
+	// 회원 가입
+	public void joinMember(Member member) {
+
+		// 비밀번호 salt + hash
+		String hashedPw = null;
+		byte[] saltByte = null;
+		String salt = null;
+
+		SaltGeneration saltGeneration = new SaltGeneration();
+		HashGeneration hash = new HashGeneration();
+
+		try {
+			saltByte = saltGeneration.saltGeneration();
+			hashedPw = hash.hashGeneration(member.getPw(), saltByte);
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		salt = new String(Base64.getEncoder().encode(saltByte));
+		member.setPw(hashedPw);
+		member.setHashSalt(salt.toString());
+
+		memberMapper.insertMemberInfo(member);
+	}
+
+	// 로그인
+	public Map<String, Object> getOneMember(String emailId, String pw) {
+
+		// 일치하는 아이디 있는지 먼저 확인 -> 해당 salt 가져와서 입력받은 pw로 해시한 후 비밀번호 같은지 확인해야 하므로!
+		Map<String, Object> map = memberMapper.selectId(emailId);
+		// 일치하는 아이디 없음 - 로그인 실패
+		if (map == null) {
+
+			return null;
+
+			// 일치하는 아이디 있음
+		} else {
+			String hashedPw = null;
+			String salt = (String) map.get("hashSalt");
+			HashGeneration hash = new HashGeneration();
+
+			try {
+				hashedPw = hash.hashGeneration(pw, Base64.getDecoder().decode(salt));
+			} catch (NoSuchAlgorithmException e) {
+
+				e.printStackTrace();
+			} catch (UnsupportedEncodingException e) {
+
+				e.printStackTrace();
+			}
+
+			// 비밀번호 맞음 - 로그인 절반 성공(상태 확인 안했음 - controller에서!)
+			if (hashedPw.equals(map.get("pw"))) {
+
+				return map;
+			} else {
+				// 비밀번호 틀림 - 로그인 실패
+				return null;
+			}
+		}
+	}
+
+	// 사번 중복확인
+	public String checkEmployeeNo(String employeeNo) {
+
+		return memberMapper.selectEmployeeNo(employeeNo);
+	}
+
+	// 아이디 중복 확인
+	public String checkEmailId(String emailId) {
+
+		return memberMapper.selectEmailId(emailId);
+	}
+
+	// 소속팀명 가져오기
+	public String[] getAllTeam() {
+
+		return memberMapper.selectAllTeam();
+	}
+
+	// 사번, 이름 가져오기
+	public Map<String, Object> getNoName(String employeeNo) {
+
+		return memberMapper.selectNoName(employeeNo);
+
+	}
+
+	// 관리자 여부 확인
+	public String getLeaderYN(String employeeNo) {
+
+		return memberMapper.selectLeaderYN(employeeNo);
+	}
+
+	// 비밀번호, salt 가져오기
+	public Map<String, Object> getPwSalt(String employeeNo) {
+
+		return memberMapper.selectPwSalt(employeeNo);
+	}
+
+	// 비밀번호 변경
+	public void updatePw(String pw, String salt, String employeeNo) {
+		
+		String hashedPw = null;
+		HashGeneration hash = new HashGeneration();
+
+		try {
+			hashedPw = hash.hashGeneration(pw, Base64.getDecoder().decode(salt));
+		} catch (NoSuchAlgorithmException e) {
+
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+
+			e.printStackTrace();
+		}
+		
+		memberMapper.updatePw(hashedPw, employeeNo);
+	}
+
+	/**
+	 * <pre>
+	 * applyNoTest
+	 * </pre>
+	 * 
+	 * 임시 테스트 휴가접수 번호 연번 테스트 1분단위로 연번을 생성, 연번 중복 확인
+	 */
+	@Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+	public void applyNoTest() {
+		memberMapper.applyNoTest();
+
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+	public void applyNoTest1() {
+		memberMapper.applyNoTest1();
+
+	}
+
+	@Transactional(isolation = Isolation.SERIALIZABLE, propagation = Propagation.REQUIRES_NEW, rollbackFor = Exception.class)
+	public void applyNoTest2() {
+
+		// 시퀀스 가져옴
+		int seq = memberMapper.getVacationApplyNo();
+
+		// 현재시간 날짜 포맷 설정
+		DateFormat df = new SimpleDateFormat("yyyyMMddHHmmss", Locale.KOREA);
+		String currentTime = df.format(new Date(System.currentTimeMillis()));
+
+		// 시퀀스가 001 002 003 등 3자리 숫자가 되도록 왼쪽에 0 붙여주고, 현재시간 + 시퀀스로 applyNo 만듦
+		String applyNo = currentTime + StringUtils.leftPad(String.valueOf(seq), 3, "0");
+
+		String vacationApplyNo = getApplyNo(applyNo);
+		LOGGER.debug("vacationApplyNo =" + vacationApplyNo);
+		memberMapper.applyNoTest2(getApplyNo(vacationApplyNo));
+
+	}
+
+	private String getApplyNo(String vacationApplyNo) {
+		// 현재시간 + 시퀀스
+		String tmmNo = vacationApplyNo;
+		// 현재시간 + 시퀀스를 char배열로!
+		char[] chr = tmmNo.toCharArray();
+
+		int sum = 0;
+		int quotient = 10;
+
+		for (int i = 0; i < chr.length; i++) {
+			sum = sum + ((chr[i] - '0'));
+		}
+
+		int remainder = sum % quotient;
+		return tmmNo + remainder;
+	}
+
+}
