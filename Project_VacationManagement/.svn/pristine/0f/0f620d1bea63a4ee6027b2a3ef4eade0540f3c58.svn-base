@@ -1,0 +1,46 @@
+package com.dayside.vacation.member.model;
+
+public class BaseResult {
+
+	private String returnCode;
+	private String returnDesc;
+
+	public BaseResult() {
+
+	}
+
+	public BaseResult(String returnCode, String returnDesc) {
+		this.returnCode = returnCode;
+		this.returnDesc = returnDesc;
+	}
+
+	/**
+	 * @return the returnCode
+	 */
+	public String getReturnCode() {
+		return returnCode;
+	}
+
+	/**
+	 * @param returnCode
+	 *            the returnCode to set
+	 */
+	public void setReturnCode(String returnCode) {
+		this.returnCode = returnCode;
+	}
+
+	/**
+	 * @return the returnDesc
+	 */
+	public String getReturnDesc() {
+		return returnDesc;
+	}
+
+	/**
+	 * @param returnDesc
+	 *            the returnDesc to set
+	 */
+	public void setReturnDesc(String returnDesc) {
+		this.returnDesc = returnDesc;
+	}
+}

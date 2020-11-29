@@ -1,0 +1,87 @@
+package com.dayside.vacation.overtime.model;
+
+import java.util.Date;
+
+public class Overtime {
+	
+	private String overtimeApplyNo;
+	private String employeeNo;
+	private Date applyDt;
+	private String startDt;
+	private String endDt;
+	private String overtimeType;
+	private String overtimeContent;
+	
+	public Overtime() {
+		super();
+	}
+
+	public Overtime(String overtimeApplyNo, String employeeNo, Date applyDt, String startDt, String endDt,
+			String overtimeType, String overtimeContent) {
+		super();
+		this.overtimeApplyNo = overtimeApplyNo;
+		this.employeeNo = employeeNo;
+		this.applyDt = applyDt;
+		this.startDt = startDt;
+		this.endDt = endDt;
+		this.overtimeType = overtimeType;
+		this.overtimeContent = overtimeContent;
+	}
+
+	public String getOvertimeApplyNo() {
+		return overtimeApplyNo;
+	}
+
+	public void setOvertimeApplyNo(String overtimeApplyNo) {
+		this.overtimeApplyNo = overtimeApplyNo;
+	}
+
+	public String getEmployeeNo() {
+		return employeeNo;
+	}
+
+	public void setEmployeeNo(String employeeNo) {
+		this.employeeNo = employeeNo;
+	}
+
+	public Date getApplyDt() {
+		return applyDt;
+	}
+
+	public void setApplyDt(Date applyDt) {
+		this.applyDt = applyDt;
+	}
+
+	public String getStartDt() {
+		return startDt;
+	}
+
+	public void setStartDt(String startDt) {
+		this.startDt = startDt;
+	}
+
+	public String getEndDt() {
+		return endDt;
+	}
+
+	public void setEndDt(String endDt) {
+		this.endDt = endDt;
+	}
+
+	public String getOvertimeType() {
+		return overtimeType;
+	}
+
+	public void setOvertimeType(String overtimeType) {
+		this.overtimeType = overtimeType;
+	}
+
+	public String getOvertimeContent() {
+		return overtimeContent;
+	}
+
+	public void setOvertimeContent(String overtimeContent) {
+		this.overtimeContent = overtimeContent;
+	}
+	
+}

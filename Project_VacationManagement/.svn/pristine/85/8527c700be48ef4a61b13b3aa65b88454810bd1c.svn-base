@@ -1,0 +1,27 @@
+package com.dayside.vacation.common.interceptor;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import com.dayside.vacation.vacation.model.Vacation;
+import com.dayside.vacation.vacation.service.VacationService;
+
+public class ApplyNoCheckInterceptor extends HandlerInterceptorAdapter {
+	
+	@Autowired
+	VacationService vacationService;
+		
+	@Override
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+								Object handler) throws Exception {
+		
+		String vacationApplyNo = request.getParameter("applyNo");
+		
+		if(vacationApplyNo == null) {
+			response.sendRedirect("/vacation/list");
+			return false;
+		}
+		return true; 
+	}
+}

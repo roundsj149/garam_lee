@@ -1,0 +1,96 @@
+$(function() {
+	
+	// 휴가 승인 일수 계산
+	$.ajax({
+		url : "/vacation/count_vacation",
+		type : 'POST', 
+		dataType:"json",
+		success : function(data) {
+		
+			$("#countAll").text(data);
+			
+		},
+		error : function(xhr, status) {
+			document.write(xhr + " : " + status);
+		}
+	});	
+	
+	
+	
+	$(".vacation-list").on("click", function() {
+	
+		var applyNo = $(this).attr("id");
+		var modalFooter = $(".modal-footer");
+		modalFooter.html("");
+		var closeBtn = $('<button type="button" class="btn btn-secondary" data-dismiss="modal">닫기</button>');
+		
+		// 휴가 번호로 휴가 상태 가져오기
+		$.ajax({
+			url : "/vacation/vacation_status",
+			type : 'POST', 
+			data : {"applyNo":applyNo},
+			dataType:"json",
+			success : function(data) {
+		    
+				if(data == 'VACATION_APPROVAL') {
+					var updateBtn = $('<button id="updateBtn" type="button" class="btn btn-warning">휴가 수정</button>');
+					var cancelBtn = $('<button id="cancelBtn" type="button" class="btn btn-outline-warning">휴가 취소</button>');
+					modalFooter.append(updateBtn);
+					modalFooter.append(cancelBtn);
+				}
+				modalFooter.append(closeBtn);
+		            	
+		    },
+			error : function(xhr, status) {
+			
+		    	document.write(xhr + " : " + status);
+		    	
+		    }
+		});	
+		
+		// 휴가 취소 버튼 선택
+		$(document).on("click", "#cancelBtn", cancelVacation);
+		
+		// 휴가 취소 버튼 선택 시 호출할 함수
+		function cancelVacation() {
+			if(confirm("신청한 휴가를 취소하시겠습니까?")){
+				$.ajax({
+		            url : "/vacation/cancel_process",
+		            type : 'POST', 
+		            data : {"applyNo":applyNo},
+		            dataType:"json",
+		            success : function(data) {
+		            	location.href = "/vacation/list";
+		            	//if(data.returnCode == "VACATION_APPROVAL") {
+		                	
+		                //} else {
+		                //	console.log(data.returnCode);
+		                //}
+		            },
+					error : function(xhr, status) {
+		                document.write(xhr + " : " + status);
+		            }
+				});	
+		
+		        return true;
+
+		    } else {
+		
+		        return false;
+		    }
+		}
+		
+		// 휴가 수정 버튼 선택
+		$(document).on("click", "#updateBtn", updateVacation);
+		
+		// 휴가 수정 버튼 선택 시 호출할 함수
+		function updateVacation() {
+				console.log("수정할 휴가: "+applyNo);
+				location.href = "/vacation/update_page?applyNo="+applyNo;
+
+		        return true;
+		}
+		
+	});
+		
+});	

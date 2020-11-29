@@ -1,0 +1,5 @@
+package com.dayside.vacation.overtime.model;
+
+public class Overtime {
+
+}

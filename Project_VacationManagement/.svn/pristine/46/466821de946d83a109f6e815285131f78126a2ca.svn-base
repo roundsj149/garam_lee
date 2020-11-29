@@ -1,0 +1,92 @@
+package com.dayside.vacation.util;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class LoginCheckFilter implements Filter {
+
+	// 로그인 체크 안해도 되는 페이지 추가
+	private String whiteList = "/member/";
+	// 추가해야 할 리소스
+	private String resourceList = "/resources/";
+
+	@Override
+	public void destroy() {
+
+	}
+
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+
+	}
+
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+			throws IOException, ServletException {
+
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) resp;
+
+		// 입력받은 uri
+		String uri = request.getRequestURI();
+		System.out.println("입력 받은 uri: "+uri);
+		// uri가 필터에서 제외할 리스트에 해당하지 않을 때: 필터를 거쳐야하는 요청일 때!
+		if (!uri.startsWith(whiteList)) {
+			System.out.println("필터에 들어온 uri: "+uri);
+			boolean isURIResourceFile = false;
+
+			// resources 폴더마저 제외시키면 안되므로
+			if (uri.startsWith(resourceList)) {
+				System.out.println("resource 허용 uri: "+uri);
+				isURIResourceFile = true;
+			}
+			
+			// resources폴더의 파일이 아닐 때: js,css 파일 등이 아닌 진짜 필터를 거쳐야하는 uri일 때
+			if (!isURIResourceFile) {
+				System.out.println("필터에 들어온 resource가 아닌 uri: "+uri);
+				String employeeNo = (String) request.getSession().getAttribute("memberSession");
+
+				if (employeeNo == null) {
+
+					response.sendRedirect("/member/login");
+					return;
+
+				}
+
+			}
+		// 로그인 된 상태에서 login, join 등의 페이지 접근 시 list 페이지로 이동시키기
+		} else if(uri.startsWith(whiteList) && !uri.endsWith("logout")) {
+			System.out.println("필터 제외 대상 중 logout페이지가 아닌 페이지: "+uri);
+			boolean isURIResourceFile = false;
+
+			if (uri.startsWith(resourceList)) {
+				isURIResourceFile = true;
+			
+			}
+
+			if (!isURIResourceFile) {
+
+				String employeeNo = (String) request.getSession().getAttribute("memberSession");
+
+				if (employeeNo != null) {
+					System.out.println("로그인 상태일 때 list로 이동시키기: "+uri);
+					response.sendRedirect("/vacation/list");
+					return;
+
+				}
+			}
+		}
+		// 다른 필터가 있을 때 그 필터를 찾아가고, 없으면 리소스 리턴
+		chain.doFilter(request, response);
+	}
+}

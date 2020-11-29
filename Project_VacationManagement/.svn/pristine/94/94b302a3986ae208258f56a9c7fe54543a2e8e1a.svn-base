@@ -1,0 +1,10 @@
+package com.dayside.vacation.member.model;
+
+import lombok.Data;
+
+@Data
+public class UpdatePw {
+	private String currPw;
+	private String newPw;
+	private String newPwCheck;
+}

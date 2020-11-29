@@ -1,0 +1,34 @@
+package com.dayside.vacation.common.model;
+
+import com.dayside.vacation.common.result.ResultCodeDesc;
+import com.dayside.vacation.member.model.BaseResult;
+
+import lombok.Data;
+
+@Data
+public class ReturnResultData {
+	private BaseResult baseResult;
+	private Object returnData;
+	
+	public ReturnResultData() {
+		
+	}
+	
+	public ReturnResultData(ResultCodeDesc resultCode, Object retData) {
+		this.baseResult = new BaseResult(resultCode);
+		this.returnData = retData;				
+	}
+	
+	public ReturnResultData(ResultCodeDesc resultCode) {
+		this.baseResult = new BaseResult(resultCode);
+	}
+	
+	public ReturnResultData(BaseResult baseResult, Object returnData) {
+		this.baseResult = baseResult;
+		this.returnData = returnData;				
+	}
+	
+	public ReturnResultData(BaseResult baseResult) {
+		this.baseResult = baseResult;
+	}
+}

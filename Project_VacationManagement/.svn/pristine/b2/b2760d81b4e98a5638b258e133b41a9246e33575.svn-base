@@ -1,0 +1,157 @@
+$(function() {
+	// date format 설정
+	function getFormatDate(date) {
+		var year = date.getFullYear();              // yyyy
+		var month = (1 + date.getMonth());          // MM
+		month = month >= 10 ? month : '0' + month;  // 1~9월 두 자리로
+		var day = date.getDate();                   // dd
+		day = day >= 10 ? day : '0' + day;          // 1~9일 두 자리로
+		return year + "-" + month + "-" + day;       //'-' 추가하여 yyyy-MM-dd 포맷으로
+	}
+	
+	// string to int
+	function getStringToNum(value) {
+		var str = value.replace(/-/gi,"");
+		var num = parseInt(str);
+		return num;
+	}
+
+	var currDate = new Date();
+
+	// text box 표시
+	$("#startDate").val(getFormatDate(currDate));
+	// 출근일 달력 설정
+	$("#startDate").datepicker({
+		format: "yyyy-mm-dd", // 달력에서 클릭시 표시할 값 형식
+		startDate: '-3d',
+		todayHighlight: true,
+		todayBtn: 'linked',
+		autoclose: true,
+	});
+	// 출근일을 오늘 날짜로 자동 선택
+	$("#startDate").datepicker("setDate", currDate);
+	// 날짜 선택 시
+	$("#startDate").on("changeDate", function(e) {
+		currDate = new Date(e.date.valueOf());
+
+		// 날짜 선택 시 라디오 버튼 선택 해제(bootstrap 적용해서 active클래스 없애주어야 함)
+		$("input:radio[name=overtimeType]").prop("checked", false);
+		$(".btn-group").find("label").removeClass("active");
+	});
+
+	// 출근일의 분 선택 시 퇴근일시 박스 보이기
+	$("#sMinute").on("change", function() {
+		// 퇴근일시 박스 보이기
+		$("#endDate").css("visibility", "visible");
+		$("#eTimeBox").css("visibility", "visible");
+		// 퇴근일 출근일로 세팅
+		$("#endDate").datepicker("setStartDate", currDate);
+		$("#endDate").val($("#startDate").val());
+		// 1. 날짜가 같을 때 - 시간이 무조건 후여야 함 2. 날짜가 다를 때 – 상관 없음
+		if ($("#startDate").val() == $("#endDate").val()) {
+			$("#eHour").val($("#sHour").val()).prop("selected", true);
+			$("#eMinute").val($("#sMinute").val()).prop("selected", true);
+		}
+
+	});
+
+	$("#endDate").datepicker({
+		format: "yyyy-mm-dd", // 달력에서 클릭시 표시할 값 형식
+		//endDate: "+2m",
+		todayHighlight: true,
+		todayBtn: 'linked',
+		autoclose: true,
+	})
+		.on("changeDate", function(e) {
+			var maxDate = new Date(e.date.valueOf());
+			$("#startDate").datepicker("setEndDate", maxDate);
+
+		});
+
+	// 신청하기 버튼 눌렀을 때 동작
+	$("#requestBtn").on("click", requestProcess);
+
+	// 신청하기 버튼 눌렀을 때 호출할 함수
+	function requestProcess() {
+		
+		var startDate = getStringToNum($("#startDate").val());
+		var endDate = getStringToNum($("#endDate").val());
+		var sHour = parseInt(($("#sHour").val()));
+		var eHour = parseInt(($("#eHour").val()));
+		var sMinute = parseInt($("#sMinute").val());
+		var eMinute = parseInt($("#eMinute").val());
+
+		// 초과근무 유형 선택 안했을 때
+		if ($("input:radio[name=overtimeType]:checked").length == 0) {
+			$(".modal p").text("초과근무 유형을 선택해주세요.");
+			$(".modal").modal("show");
+			return;
+		}
+		// 시작일이 종료일보다 작을 때
+		if (startDate > endDate) {
+			$(".modal p").text("출근일이 퇴근일보다 클 수 없습니다.");
+			$(".modal").modal("show");
+			return;
+		// 시작일과 종료일이 같을 때
+		} else if (startDate == endDate) {
+			// 시작 시간이 종료 시간보다 클 때
+			if (sHour > eHour) {
+				console.log("시작일=종료일, 시작시간>종료시간");
+				$(".modal p").text("출근 시간이 퇴근 시간보다 클 수 없습니다.");
+				$(".modal").modal("show");
+				return;
+			} else if (sHour == eHour) {
+				console.log("시작일=종료일, 시작시간=종료시간");
+				if (sMinute > eMinute) {
+					console.log("시작일=종료일, 시작시간=종료시간, 시작분>종료분");
+					$(".modal p").text("출근 시간이 퇴근 시간보다 클 수 없습니다.");
+					$(".modal").modal("show");
+					return;
+				}
+			}
+		}
+
+		var formData = {
+			"startDate": $("#startDate").val(),
+			"sHour": $("#sHour").prop("selected", true).val(),
+			"sMinute": $("#sMinute").prop("selected", true).val(),
+			"endDate": $("#endDate").val(),
+			"eHour": $("#eHour").prop("selected", true).val(),
+			"eMinute": $("#eMinute").prop("selected", true).val(),
+			"overtimeType": $("input:radio[name=overtimeType]:checked").val(),
+			"overtimeContent": $("#overtimeContent").val()
+		};
+
+		$.ajax({
+			url: "/overtime/request_process",
+			type: 'POST',
+			data: formData,
+			dataType: "json",
+			success: function(data) {
+				console.log("초과근무 신청 결과: " + data.returnCode);
+				if (data.returnCode == "SUCCESS") {
+					location.href = "/overtime/list";
+				} else {
+					console.log("에러 코드: " + data.returnCode);
+				}
+			},
+			error: function(xhr, status) {
+				document.write(xhr + " : " + status);
+			}
+		});
+
+	}
+
+});
+
+
+
+
+
+
+
+
+
+
+
+

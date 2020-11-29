@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayside.vacation.member.mapper.MemberMapper">
+	<!-- 가입자 정보 조회 -->
+	<select id="selectAllMember" resultType="member">
+    	SELECT * FROM DAYSIDE_MEMBER
+	</select>
+	<!-- 회원 가입 -->
+	<insert id="insertMemberInfo">
+	<![CDATA[
+		INSERT INTO DAYSIDE_MEMBER 
+		VALUES(
+				#{employeeNo}, 
+				#{emailId}, 
+				#{fullname}, 
+				#{pw}, 
+				#{hashSalt}, 
+				#{team}, 
+				#{leaderYn}, 
+				#{adminYn}, 
+				SYSDATE, 
+				'JOIN_REQUEST')
+	]]>
+	</insert>
+	<!-- 동일한 아이디 확인(리턴타입 Member) -->
+	<select id="selectId" resultType="member">
+	<![CDATA[
+		SELECT * FROM DAYSIDE_MEMBER
+		WHERE EMAIL_ID = #{emailId}
+	]]>
+	</select>
+	<!-- 로그인 
+	<select id="selectOneMember" resultType="Member">
+	<![CDATA[
+    	SELECT * 
+    	FROM DAYSIDE_MEMBER
+		WHERE EMAIL_ID = #{emailId}
+		AND PW = #{pw}
+    ]]>
+	</select>-->
+	<!-- 사번 중복 확인 -->
+	<select id="selectEmployeeNo" resultType="String">
+	<![CDATA[
+		SELECT EMPLOYEE_NO FROM DAYSIDE_MEMBER
+		WHERE EMPLOYEE_NO = #{employeeNo}
+	]]>
+	</select>
+	
+		<!-- 아이디 중복 확인(리턴타입 String) -->
+	<select id="selectEmailId" resultType="String">
+	<![CDATA[
+		SELECT EMAIL_ID FROM DAYSIDE_MEMBER
+		WHERE EMAIL_ID = #{emailId}
+	]]>
+	</select>
+	<!-- 소속팀명 조회 -->
+	<select id="selectAllTeam" resultType="String">
+	<![CDATA[
+		SELECT CODE_ID FROM DAYSIDE_CODE
+		WHERE CODE_GROUP_ID='TEAM'
+	]]>
+	</select>
+	
+	<!-- applyNoTest -->
+	<insert id="applyNoTest" flushCache="true" >
+	<![CDATA[
+		INSERT INTO /* MemberMapper.xml applyNoTest */  DAYSIDE_VACATION 
+		SELECT TO_CHAR(SYSDATE, 'YYYYMMDD-HH24MI-')||TO_CHAR(COUNT(VACATION_APPLY_NO)+1,'009')
+			,'120002'
+			,SYSDATE
+			,SYSDATE
+			,SYSDATE
+			,'ALLDAY' 
+			,1 
+			,'VACATION_REQUEST' 
+		FROM DAYSIDE_VACATION 
+		WHERE APPLY_DT BETWEEN TO_DATE(TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24MI'),'YYYY-MM-DD HH24MI') 
+			 AND  TO_DATE(TO_CHAR(SYSDATE, 'YYYY-MM-DD HH24MI'),'YYYY-MM-DD HH24MI') + (INTERVAL '1' minute)		     
+	]]>
+	</insert>
+	
+	<!-- applyNoTest -->
+	<insert id="applyNoTest1" flushCache="true" >
+	<![CDATA[
+		INSERT  /* MemberMapper.xml applyNoTest1 */
+		    INTO DAYSIDE_VACATION (
+					VACATION_APPLY_NO
+					,EMPLOYEE_NO
+					,APPLY_DT
+					,START_DT
+					,END_DT
+					,VACATION_TYPE
+					,COUNT_DAYS
+					,VACATION_STATUS
+		    )
+		VALUES ( TO_CHAR(SYSDATE, 'YYYYMMDD-HH24MI-')||TO_CHAR(TEST_TABLE_SEQ.NEXTVAL, '009')
+			,'120002'
+			,SYSDATE
+			,SYSDATE
+			,SYSDATE
+			,'ALLDAY' 
+			,1 
+			,'VACATION_REQUEST' )			     
+	]]>
+	</insert>
+	
+	<!-- applyNoTest -->
+	<insert id="applyNoTest2" flushCache="true" parameterType="String">
+	<![CDATA[
+		INSERT  /* MemberMapper.xml applyNoTest2 */
+		    INTO DAYSIDE_VACATION ( 
+					VACATION_APPLY_NO
+					,EMPLOYEE_NO
+					,APPLY_DT
+					,START_DT
+					,END_DT
+					,VACATION_TYPE
+					,COUNT_DAYS
+					,VACATION_STATUS
+		    )
+		VALUES ( #{vacationApplyNo} 
+			,'120002'
+			,SYSDATE
+			,SYSDATE
+			,SYSDATE
+			,'ALLDAY' 
+			,1 
+			,'VACATION_REQUEST' )	
+	     
+	]]>
+	</insert>
+	<select id="getVacationApplyNo" resultType="int">
+    	SELECT TEST_TABLE_SEQ.NEXTVAL FROM DUAL
+	</select>
+</mapper>
+
+
+
+
+
+
+
+

@@ -1,0 +1,74 @@
+package com.dayside.vacation.util;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+public class LoginCheckFilter implements Filter {
+
+	private String whiteList="/member/";
+	private List<String> resourceList;
+
+	public LoginCheckFilter() {
+		
+		// 로그인 체크 안해도 되는 페이지 추가
+		
+		// js,css 등 resource 파일 읽어올 수 있게 하기 위해
+		resourceList = new ArrayList<String>();
+		resourceList.add("/resources/");
+	}
+
+	@Override
+	public void destroy() {
+
+	}
+
+	@Override
+	public void init(FilterConfig filterConfig) throws ServletException {
+
+	}
+
+	@Override
+	public void doFilter(ServletRequest req, ServletResponse resp, FilterChain chain)
+			throws IOException, ServletException {
+
+		HttpServletRequest request = (HttpServletRequest) req;
+		HttpServletResponse response = (HttpServletResponse) resp;
+
+		String uri = request.getRequestURI();
+		if (!uri.startsWith(whiteList)) {
+			boolean isURIResourceFile = false;
+			
+			for(String resource : resourceList) {
+				if(uri.startsWith(resource)) {
+					isURIResourceFile = true;
+					break;
+				}
+			}
+
+			if(!isURIResourceFile) {
+				
+				String employeeNo = (String) request.getSession().getAttribute("memberSession");
+				
+				if (employeeNo == null) {
+
+					response.sendRedirect("/member/login");
+					return;
+
+				}
+				
+			}
+		}
+		chain.doFilter(request, response);
+	}
+
+}

@@ -1,0 +1,6 @@
+$(function() {
+	$("#pwUpdateBtn").on("click", function() {
+
+		location.href = "/member/updatePw";
+	});
+});

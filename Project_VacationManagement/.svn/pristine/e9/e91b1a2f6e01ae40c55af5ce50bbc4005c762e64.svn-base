@@ -1,0 +1,83 @@
+@charset "UTF-8";
+
+html {
+	margin:0;
+	padding:0;
+	min-width:25rem;
+    background: #1b1c1d;
+    -ms-user-select: none;
+	-moz-user-select: -moz-none;
+	-khtml-user-select: none;
+	-webkit-user-select: none;
+	user-select: none;
+}
+
+body {
+    min-height: 100%;
+}
+
+h3 {
+	margin:0;
+}
+
+.container {
+	
+	min-height: 80vh;
+	display:flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items:center;
+	padding-top: 10vh;
+	padding-bottom:10vh;
+}
+
+.logo {
+	padding-left:0;
+}
+.login-box {
+ 	min-width:30vw;
+ 	max-width:40vw
+	display: flex;
+	flex-direction: column;
+	align-self: center;
+	justify-content: center;
+}
+
+.title-box {
+	display:flex;
+	justify-content:center;
+	align-items:center;
+	padding: 0;
+	margin-bottom: 2rem;
+}
+
+.form-content {
+	margin: 0.1rem;
+	margin-bottom: 0.7rem;
+	padding: 0.1rem;
+}
+
+.form-grid {
+	display:grid;
+	grid-template-columns:1fr 1fr;
+}
+
+.id-blank, .pw-blank, .no-check, .id-check, .fullname-check, .pw-check, .pw-double-check, .team-check, .leader-check, .admin-check  {
+	padding:0.3rem;
+	color:red;
+	font-size:0.8rem;
+	display:none;
+}
+
+.info-check {
+	text-align:center;
+	display:none;
+}
+
+.invalid+div {
+	color:red;
+}
+
+.valid+div {
+	color:blue;	
+}

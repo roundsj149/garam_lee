@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dayside.vacation.vacation.mapper.VacationMapper">
+	<!--  휴가 신청 정보 조회 -->
+	<resultMap type="Map" id="vacationListMap">
+		<id column="VACATION_APPLY_NO" property="vacationApplyNo" />
+		<id column="APPLY_DT" property="applyDt" />
+		<id column="START_DT" property="startDt" />
+		<id column="END_DT" property="endDt" />
+		<id column="COUNT_DAYS" property="countDays" />
+		<id column="VACATION_STATUS" property="vacationStatus" />
+		<id column="FULLNAME" property="fullname" />
+		<id column="START_TYPE_K" property="startTypeK" />
+		<id column="END_TYPE_K" property="endTypeK" />
+		<id column="KOREAN_CODE_NAME" property="koreanCodeName" />
+		<id column="START_TYPE" property="startType" />
+		<id column="END_TYPE" property="endType" />
+	</resultMap>
+	<select id="selectAllVacationInfo" resultMap="vacationListMap">
+	SELECT *
+	FROM (
+            SELECT ROWNUM rnum, t1.*
+            FROM (
+					SELECT v.VACATION_APPLY_NO, v.APPLY_DT, v.START_DT, v.END_DT, v.COUNT_DAYS, v.VACATION_STATUS, m.FULLNAME, c1.KOREAN_CODE_NAME START_TYPE_K, c2.KOREAN_CODE_NAME END_TYPE_K, c3.KOREAN_CODE_NAME, c1.CODE_ID START_TYPE, c2.CODE_ID END_TYPE
+					FROM DAYSIDE_VACATION v, DAYSIDE_MEMBER m, DAYSIDE_CODE c1, DAYSIDE_CODE c2, DAYSIDE_CODE c3
+					WHERE v.EMPLOYEE_NO = m.EMPLOYEE_NO
+					AND v.VACATION_STATUS = c3.CODE_ID
+			        AND v.START_TYPE = c1.CODE_ID
+			        AND v.END_TYPE = c2.CODE_ID
+			        AND (TO_CHAR(v.START_DT,'YYYY') = #{selectYear}
+			       		 OR TO_CHAR(END_DT,'YYYY') = #{selectYear})
+					<if test="value != null">AND v.EMPLOYEE_NO = #{value} </if>
+					<if test="searchWord != null">AND m.FULLNAME LIKE '%'||#{searchWord}||'%' </if>
+					<![CDATA[
+					ORDER BY VACATION_APPLY_NO DESC) t1
+			) t2
+	WHERE t2.rnum >= (#{currPage}-1)*10+1 AND t2.rnum <= (#{currPage}-1)*10+10
+	]]>
+	</select>
+	<!-- 휴가 신청 번호를 위한 시퀀스 -->
+	<select id="getVacationApplySeq" resultType="int">
+    	SELECT DAYSIDE_VACATION_SEQ.NEXTVAL FROM DUAL
+	</select>
+	<!-- 휴가 신청 -->
+	<insert id="insertVacationInfo">
+	<![CDATA[
+		INSERT INTO DAYSIDE_VACATION
+		VALUES(
+				#{vacationApplyNo}, 
+				#{employeeNo}, 
+				SYSDATE, 
+				#{startDt}, 
+				#{endDt}, 
+				#{startType},
+				#{endType},
+				#{countDays},
+				'VACATION_APPROVAL')
+	]]>
+	</insert>
+	<!-- 휴가 취소 -->
+	<delete id="deleteVacationInfo">
+	<![CDATA[
+		UPDATE DAYSIDE_VACATION
+		SET VACATION_STATUS='VACATION_CANCEL'
+		WHERE VACATION_APPLY_NO=#{vacationApplyNo}
+	]]>
+	</delete>
+	<!-- 휴가 수정 선택 -->
+	<resultMap type="Map" id="vacationUpdateMap">
+		<id column="VACATION_APPLY_NO" property="vacationApplyNo" />
+		<id column="EMPLOYEE_NO" property="employeeNo" />
+		<id column="FULLNAME" property="fullname" />
+		<id column="START_DT" property="startDt" />
+		<id column="START_TYPE" property="startType" />
+		<id column="END_DT" property="endDt" />
+		<id column="END_TYPE" property="endType" />
+	</resultMap>
+	<select id="selectOneVacationInfo" resultMap="vacationUpdateMap">
+	<![CDATA[
+		SELECT v.VACATION_APPLY_NO, v.EMPLOYEE_NO, m.FULLNAME, v.START_DT, v.START_TYPE, v.END_DT, v.END_TYPE
+		FROM DAYSIDE_VACATION v, DAYSIDE_MEMBER m
+        WHERE v.EMPLOYEE_NO = m.EMPLOYEE_NO
+		AND VACATION_APPLY_NO = #{vacationApplyNo}
+	]]>
+	</select>
+	<!-- 휴가 사용 수 -->
+	<select id="countVacation" resultType="float">
+	<![CDATA[
+		SELECT NVL(SUM(COUNT_DAYS),0)
+		FROM DAYSIDE_VACATION
+		WHERE EMPLOYEE_NO=#{employeeNo}
+		AND VACATION_STATUS='VACATION_APPROVAL'
+	]]>
+	</select>
+	<!-- 휴가 상태 -->
+	<resultMap type="Map" id="statusMap">
+		<id column="VACATION_STATUS" property="vacationStatus" />
+		<id column="EMPLOYEE_NO" property="employeeNo" />
+	</resultMap>
+	<select id="selectVacationStatus" resultMap="statusMap">
+	<![CDATA[
+		SELECT VACATION_STATUS, EMPLOYEE_NO
+		FROM DAYSIDE_VACATION
+		WHERE VACATION_APPLY_NO = #{vacationApplyNo}
+	]]>
+	</select>
+	<!-- 휴가 수정 -->
+	<update id="updateVacationInfo">
+		<![CDATA[
+			UPDATE DAYSIDE_VACATION
+			SET APPLY_DT=SYSDATE, 
+				START_DT=#{startDt},
+				END_DT=#{endDt},  
+				START_TYPE=#{startType},
+				END_TYPE=#{endType},
+				COUNT_DAYS=#{countDays}
+				WHERE VACATION_APPLY_NO=#{vacationApplyNo}
+		]]>
+	</update>
+	<!-- 전체 휴가 수 -->
+	<select id="countAllVacation" resultType="int">
+		SELECT COUNT(*) 
+		FROM DAYSIDE_VACATION v, DAYSIDE_MEMBER m
+		WHERE v.EMPLOYEE_NO = m.EMPLOYEE_NO
+		AND (TO_CHAR(v.START_DT,'YYYY') = #{selectYear}
+        OR TO_CHAR(v.END_DT,'YYYY') = #{selectYear})
+		<if test="value != null">AND v.EMPLOYEE_NO = #{value} </if>
+		<if test="searchWord != null">AND m.FULLNAME LIKE '%'||#{searchWord}||'%' </if>
+	</select>
+	<!-- 휴가 상태, 일수 -->
+	<select id="selectApprovalVacationDays" resultType="float">
+		SELECT NVL(SUM(COUNT_DAYS),0)
+		FROM DAYSIDE_VACATION v, DAYSIDE_MEMBER m
+		WHERE v.EMPLOYEE_NO = m.EMPLOYEE_NO
+		AND v.VACATION_STATUS='VACATION_APPROVAL'
+		AND (TO_CHAR(v.START_DT,'YYYY') = #{selectYear}
+        OR TO_CHAR(v.END_DT,'YYYY') = #{selectYear})
+		<if test="value != null">AND v.EMPLOYEE_NO = #{value} </if>
+		<if test="searchWord != null">AND m.FULLNAME LIKE '%'||#{searchWord}||'%' </if>
+	</select>
+	<!-- 다음해로 넘어가는 데이터들 일수 나눠서 삽입 
+	<update id="updateCountDays">
+		UPDATE DAYSIDE_VACATION
+		SET BEFORE_COUNT_DAYS =#{beforeCountDays}
+		WHERE VACATION_APPLY_NO = #{vacationApplyNo};
+	</update>-->
+</mapper>
+
+
+

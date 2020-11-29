@@ -1,0 +1,96 @@
+package com.dayside.vacation.common.filter;
+
+
+import javax.servlet.Filter;
+import javax.servlet.FilterChain;
+import javax.servlet.FilterConfig;
+import javax.servlet.ServletException;
+import javax.servlet.ServletRequest;
+import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpServletRequestWrapper;
+import javax.servlet.http.HttpServletResponseWrapper;
+
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import com.dayside.vacation.common.util.HttpRequestWrapper;
+import com.dayside.vacation.common.util.HttpResponseWrapper;
+import com.dayside.vacation.member.service.MemberService;
+
+import java.io.IOException;
+import java.io.InputStream;
+
+@Component("CommonFilter")
+public class CommonFilter implements Filter {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommonFilter.class);
+	
+	@Autowired
+	MemberService memberService;
+	
+	
+    @Override
+    public void init(FilterConfig filterConfig) throws ServletException {
+		//filter 생성 시 처리
+    }
+
+    @Override
+    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        
+		HttpServletRequest req = (HttpServletRequest)request;
+		HttpServletResponse res = (HttpServletResponse)response;
+		
+    	//다음 Filter 실행 전 처리 
+    	
+    	String endPoint = req.getRequestURI();
+    	LOGGER.debug("Filter preFilter Chain  endPoint :  {}  =============================",  endPoint);   	
+    	LOGGER.debug("Filter preFilter Chain  EmailId :  {}  =============================",  req.getParameter("emailId"));
+
+        	
+    	// HTTP BODY 출력 
+//		InputStream is = req.getInputStream();
+//		byte[] bodyData = IOUtils.toByteArray(is);    	
+//		String requestBody =  bodyData != null ? new String(bodyData) : null;
+//		LOGGER.debug("RequestBody : ================\n {}  ",  requestBody);
+
+		
+	// requestBody와 responseBody를 복사해오기 위한 httpServlet 객체 wrapper
+    	HttpRequestWrapper requestWrapper = new HttpRequestWrapper(req);
+		HttpResponseWrapper responseWrapper = new HttpResponseWrapper(res);
+    	String requestBody = requestWrapper.getRequestBody();    	
+    	LOGGER.debug("RequestBody : ================\n {}  ",  requestBody);
+
+		
+		
+		// Bean사용
+    	String no = memberService.checkEmployeeNo("12345");
+    	LOGGER.debug("Filter preFilter Chain  no :  {}  =============================",  no);   	
+	
+		
+		
+        //다음 filter-chain에 대한 실행 (filter-chain의 마지막에는 Dispatcher servlet실행)
+    	chain.doFilter(requestWrapper, responseWrapper);
+        
+    	//chain.doFilter(req, res);
+    	
+    	//Wrapper 사용
+    	//chain.doFilter(requestWrapper, responseWrapper);
+    	
+    	
+        //다음 Filter 실행 후 처리 
+		
+		//TO-DO:  응답을 변경해 보아요~~~~
+    	LOGGER.debug("Filter postFilter Chain :  END  ==========================");
+		
+    }
+
+    @Override
+    public void destroy() {
+		//filter 제거 시 처리 (보통 자원의 해제처리를 한다.)
+    }
+}

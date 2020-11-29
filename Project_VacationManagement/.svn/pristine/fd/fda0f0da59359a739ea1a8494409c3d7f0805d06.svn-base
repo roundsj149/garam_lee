@@ -1,0 +1,130 @@
+$(function() {
+
+	var currDate = new Date();
+	console.log(currDate);
+	// date format 설정
+	function getFormatDate(date) {
+	    var year = date.getFullYear();              // yyyy
+	    var month = (1 + date.getMonth());          // MM
+	    month = month >= 10 ? month : '0' + month;  // 1~9월 두 자리로
+	    var day = date.getDate();                   // dd
+	    day = day >= 10 ? day : '0' + day;          // 1~9일 두 자리로
+	    return  year + "-" + month + "-" + day;       //'-' 추가하여 yyyy-MM-dd 포맷으로
+	}
+	// text box 표시
+	$("#startDate").val(getFormatDate(currDate));
+	// 시작일 달력 설정
+	$("#startDate").datepicker({
+		format : "yyyy-mm-dd", // 달력에서 클릭시 표시할 값 형식
+		startDate : '-3d',
+		todayHighlight: true,
+		todayBtn: 'linked',
+		daysOfWeekDisabled : [0,6],
+		autoclose:true
+	});
+	// 시작일을 오늘 날짜로 자동 선택
+	$("#startDate").datepicker("setDate", currDate);
+	// 날짜 선택 시
+	$("#startDate").on("changeDate", function(e) {
+		currDate = new Date(e.date.valueOf());
+		// 종료일 박스 및 일수 제거
+		$("#endDate").val("").css("visibility","hidden");
+		$("#countDate").text("");
+		// 오전, 종일 선택 버튼 제거
+		$("#endRadioBtn").css("visibility","hidden");
+		// 날짜 선택 시 라디오 버튼 선택 해제(bootstrap 적용해서 active클래스 없애주어야 함)
+		$("input:radio[name=startType]").prop("checked",false);
+		$(".btn-group").find("label").removeClass("active");
+	});
+	
+	// 오전, 오후, 종일 선택 시
+	$("input:radio[name=startType]").on("click", function() {
+		// 오전 선택 시 종료일 및 타입 선택 못하게, 일수 0.5
+		if($("input:radio[name=startType]:checked").val() == "MORNING") {
+			$("#endRadioBtn").css("visibility","hidden");
+			$("#endDate").prop("disabled",true).val($("#startDate").val());
+			$("#endDate").css("visibility","visible");
+			$("#countDate").text("0.5");
+		// 오후, 종일 선택 시
+		} else {
+			$("#countDate").text("");
+			$("#endDate").css("visibility","visible");
+			$("#endDate").prop("disabled",false).val($("#startDate").val());
+			$("#endDate").datepicker("setStartDate",currDate);
+			
+		}
+	});	
+	
+	$("#endDate").datepicker({
+		format : "yyyy-mm-dd", // 달력에서 클릭시 표시할 값 형식
+		//endDate: "+2m",
+		todayHighlight: true,
+		todayBtn: 'linked',
+		daysOfWeekDisabled : [0,6],
+		autoclose:true
+	})
+	.on("changeDate", function(e) {
+		var maxDate = new Date(e.date.valueOf());
+		$("#startDate").datepicker("setEndDate",maxDate);
+		if($("#startDate").val() == $("#endDate").val()) {
+			$("#endRadioBtn").css("visibility","hidden");
+		} else {
+			$("#endRadioBtn").css("visibility","visible");
+			
+		}
+	});
+	
+	// 신청하기 버튼 눌렀을 때 동작
+	$("#requestBtn").on("click", requestProcess);
+		
+	// 신청하기 버튼 눌렀을 때 호출할 함수
+	function requestProcess() {
+	
+		if($("input:radio[name=startType]:checked").length==0) {
+			$('.modal').modal('show');
+			return;
+		}
+		if(($("input:radio[name=startType]:checked").val() != "MORNING") && ($("#startDate").val() != $("#endDate").val()) && $("input:radio[name=endType]:checked").length==0) {
+			$('.modal').modal('show');
+			return;
+		}
+
+		var formData = {"startDate": $("#startDate").val(),
+						"startType": $("input:radio[name=startType]:checked").val(),
+						"endDate": $("#endDate").val(),
+						"endType": $("input:radio[name=endType]:checked").val()
+						};
+		
+		$.ajax({
+            url : "/vacation/request_process",
+            type : 'POST', 
+            data : formData,
+            dataType:"json",
+            success : function(data) {
+            	location.href = "/vacation/list";
+            	//if(data.returnCode == "VACATION_APPROVAL") {
+                	
+                //} else {
+                //	console.log(data.returnCode);
+                //}
+            },
+			error : function(xhr, status) {
+                document.write(xhr + " : " + status);
+            }
+		});		
+		
+	}
+	
+});
+
+
+
+
+
+
+
+
+
+
+
+
